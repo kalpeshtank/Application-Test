@@ -40,11 +40,11 @@ php -S localhost:8000 -t api
 
 | API               |    CRUD    |                                Description |
 | :---------------- | :--------: | -----------------------------------------: |
-| GET /orders        |  **READ**  |        Get all the Orders from `csv` table |
-| GET /order/{id}    |  **READ**  |        Get a single Order from `csv` table |
-| POST /order        | **CREATE** | Create a Order and insert into `csv` table |
-| PUT /order/{id}    | **UPDATE** |            Update the Order in `csv` table |
-| DELETE /order/{id} | **DELETE** |            Delete a Order from `csv` table |
+| GET /orders        |  **READ**  |        Get all the Orders from `csv` file |
+| GET /order/{id}    |  **READ**  |        Get a single Order from `csv` file |
+| POST /order        | **CREATE** | Create a Order and insert into `csv` file |
+| PUT /order/{id}    | **UPDATE** |            Update the Order in `csv` file |
+| DELETE /order/{id} | **DELETE** |            Delete a Order from `csv` file |
 
 Test the API endpoints using [Postman](https://www.postman.com/).
 
