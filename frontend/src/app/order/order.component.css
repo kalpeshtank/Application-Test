@@ -1,0 +1,17 @@
+.table-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 64px;
+    padding: 0 24px;
+    background-color: #1976d2;
+    color: #fff;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.table-title {
+    font-size: 24px;
+    font-weight: 500;
+}

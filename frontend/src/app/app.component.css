@@ -1,0 +1,35 @@
+body {
+    overflow: hidden;
+}
+
+.example-container {
+    display: flex;
+    flex-direction: column;
+    height: 80vh;
+}
+
+.example-toolbar {
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    width: 100%;
+}
+
+.example-sidenav {
+    position: fixed;
+    z-index: 1;
+    top: 64px;
+    /* adjust as needed based on the height of the toolbar */
+    bottom: 0;
+    width: 200px;
+}
+
+.example-sidenav-content {
+    flex: 1;
+    padding: 16px;
+    margin-top: 10px;
+    /* adjust as needed based on the height of the toolbar */
+    margin-left: 10px;
+    /* adjust as needed based on the width of the sidenav */
+}
+

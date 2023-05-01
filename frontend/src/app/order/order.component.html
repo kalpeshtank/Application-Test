@@ -1,0 +1,25 @@
+<div class="table-header">
+    <h2 class="table-title">Orders</h2>
+    <button mat-raised-button color="primary" (click)="addOrder()">Add Order</button>
+</div>
+<mat-table class="table table-hover" [dataSource]="tableObj.dataSource" matSort>
+    <ng-container [matColumnDef]="col" *ngFor="let col of displayedColumns; let i = index">
+        <mat-header-cell *matHeaderCellDef mat-sort-header style="text-transform:uppercase;">
+            {{ col }}
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+            <span *ngIf="col=='actions'">
+                <button mat-raised-button color="primary" (click)="deleteOrder(row)"><mat-icon
+                        [matTooltip]="'delete Order'">delete</mat-icon></button>
+                <button mat-raised-button color="primary" (click)="editOrder(row)" style="margin-left: 3px;"><mat-icon
+                        [matTooltip]="'delete Order'">edit</mat-icon></button>
+            </span>
+            <span *ngIf="col!='actions'">
+                {{ row[col] }}
+            </span>
+
+        </mat-cell>
+    </ng-container>
+    <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
+</mat-table>

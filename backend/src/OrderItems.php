@@ -42,10 +42,12 @@ class OrderItems extends BaseClass {
     private function getAllOrders() {
         try {
             $orders = array();
+            $heders = array();
             $file = fopen($this->file, 'r');
             while (($row = fgetcsv($file)) !== false) {
                 // Skip the header row
                 if ($row[0] == 'id') {
+                    $heders = $row;
                     continue;
                 }
                 // Add the order to the array
@@ -62,10 +64,9 @@ class OrderItems extends BaseClass {
                     $orders[] = $order;
                 }
             }
-
             // Close the file
             fclose($file);
-            return $this->sendResponse(200, $orders, "success");
+            return $this->sendResponse(200, ['heders' => $heders, 'data' => $orders], "success");
         } catch (\ErrorException $e) {
             return $this->sendResponse(404, [], $e->getMessage());
         }

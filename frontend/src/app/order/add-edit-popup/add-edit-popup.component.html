@@ -1,0 +1,46 @@
+<h2 mat-dialog-title>Create order</h2>
+<mat-dialog-content class="mat-typography">
+    <form class="example-form">
+        <div class="example-form-row">
+            <mat-form-field appearance="outline">
+                <input matInput placeholder="Name" name="name" [(ngModel)]="orderData.name" required>
+                <mat-error>Name is required</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <input matInput placeholder="State" name="state" [(ngModel)]="orderData.state" required>
+                <mat-error>State is required</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <input matInput placeholder="Zip" name="zip" [(ngModel)]="orderData.zip" required>
+                <mat-error>Zip is required</mat-error>
+            </mat-form-field>
+        </div>
+
+        <div class="example-form-row">
+            <mat-form-field appearance="outline">
+                <input matInput placeholder="Amount" name="amount" [(ngModel)]="orderData.amount" required>
+                <mat-error>Amount is required</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <input matInput placeholder="Quantity" name="qty" [(ngModel)]="orderData.qty" required>
+                <mat-error>Quantity is required</mat-error>
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+                <input matInput placeholder="Item" name="item" [(ngModel)]="orderData.item" required>
+                <mat-error>Item is required</mat-error>
+            </mat-form-field>
+        </div>
+    </form>
+
+</mat-dialog-content>
+<mat-dialog-actions align="end">
+    <button mat-button [mat-dialog-close]="false">Cancel</button>
+    <button mat-button (click)="addRecord()" [disabled]="loding" *ngIf="modelData.type=='add'" color="primary"
+        cdkFocusInitial>Save</button>
+    <button mat-button (click)="updateRecord()" [disabled]="loding" *ngIf="modelData.type=='edit'" color="primary"
+        cdkFocusInitial>Update</button>
+</mat-dialog-actions>
