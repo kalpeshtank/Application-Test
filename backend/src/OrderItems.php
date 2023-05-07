@@ -8,7 +8,7 @@ class OrderItems extends BaseClass {
 
     private $requestMethod;
     private $id;
-    private $file = "../database/data.csv";
+    private $file = "../data/data.csv";
 
     public function __construct($requestMethod, $id) {
         $this->requestMethod = $requestMethod;
