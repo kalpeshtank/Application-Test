@@ -10,19 +10,3 @@ body {
     font-family: Roboto, "Helvetica Neue", sans-serif;
 }
 
-/* Success Snackbar */
-.snackbar-success {
-    background-color: #43a047 !important;
-    color: #fff !important;
-}
-
-/* Error Snackbar */
-.snackbar-error {
-    background-color: #d32f2f !important;
-    color: #fff !important;
-}
-
-.mat-simple-snackbar-action button {
-    color: #000;
-}
-

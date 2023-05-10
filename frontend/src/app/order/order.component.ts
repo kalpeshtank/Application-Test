@@ -2,9 +2,9 @@ import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
 import { MatTableDataSource } from '@angular/material/table';
 import { ApiService } from '../api.service';
-import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog } from '@angular/material/dialog';
 import { AddEditPopupComponent } from './add-edit-popup/add-edit-popup.component';
+import Swal from 'sweetalert2'
 
 @Component({
   selector: 'app-order',
@@ -19,7 +19,6 @@ export class OrderComponent implements OnInit {
   loding: boolean = false;
   @ViewChild(MatSort) sort!: MatSort;
   constructor(private apiData: ApiService,
-    private _snackBar: MatSnackBar,
     public dialog: MatDialog) { }
 
   async ngOnInit() {
@@ -31,7 +30,9 @@ export class OrderComponent implements OnInit {
     this.apiData.getData('orders').subscribe({
       next: (resonse: any) => {
         if (resonse.status == 200) {
-          this.displayedColumns = [...resonse.data.heders, 'actions'];
+          let headers = resonse['data']['headers'];
+          headers.push('Actions');
+          this.displayedColumns = headers;
           this.tableObj.dataSource = new MatTableDataSource(resonse.data.data);
         } else {
           this.displayedColumns = [];
@@ -40,7 +41,6 @@ export class OrderComponent implements OnInit {
         this.loding = false;
       },
       error: (err) => {
-        console.error(err);
         this.tableObj.dataSource = new MatTableDataSource([]);
         this.loding = false;
       }
@@ -67,27 +67,29 @@ export class OrderComponent implements OnInit {
     });
   }
   deleteOrder(row: any) {
-    if (confirm("Are you sure you want to delete this item?")) {
-      this.apiData.delete('order/' + row.id).subscribe({
-        next: (resonse: any) => {
-          if (resonse.status == 200) {
-            this._snackBar.open("Order delete success successfully", 'ok', {
-              horizontalPosition: 'end', verticalPosition: 'top',
-              panelClass: ['snackbar-success'],
-              // duration: 5000
-            });
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "Are you sure you want to delete this item? You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete it!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        this.apiData.delete('order/' + row.id).subscribe({
+          next: (resonse: any) => {
+            if (resonse.status == 200) {
+              Swal.fire('Deleted!', 'Your Order has been deleted successfully.', 'success');
+              this.getTableData();
+            }
+          },
+          error: (err) => {
+            Swal.fire('Error!', err.statusText, 'error')
           }
-        },
-        error: (err) => {
-          this._snackBar.open(err.statusText, 'ok', {
-            horizontalPosition: 'end', verticalPosition: 'top',
-            panelClass: ['snackbar-error'],
-            // duration: 5000
-          });
-        }
-      });
-    }
-
+        });
+      }
+    })
   }
 
 }

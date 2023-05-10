@@ -9,7 +9,6 @@ import { HttpClientModule } from '@angular/common/http';
 import { MaterialModuleModule } from './shared/material-module/material-module.module';
 import { CommonModule } from '@angular/common';
 
-
 @NgModule({
   declarations: [
     AppComponent

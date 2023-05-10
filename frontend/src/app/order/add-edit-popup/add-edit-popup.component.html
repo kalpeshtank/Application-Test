@@ -1,37 +1,67 @@
 <h2 mat-dialog-title>Create order</h2>
 <mat-dialog-content class="mat-typography">
-    <form class="example-form">
+    <form class="example-form" [formGroup]="orderDataForm">
         <div class="example-form-row">
             <mat-form-field appearance="outline">
-                <input matInput placeholder="Name" name="name" [(ngModel)]="orderData.name" required>
-                <mat-error>Name is required</mat-error>
+                <input matInput placeholder="Name" formControlName="name" name="name">
+                <mat-error
+                    *ngIf="orderDataForm.get('name')?.invalid && (orderDataForm.get('name')?.dirty || orderDataForm.get('name')?.touched)">
+                    <span *ngIf="f['name'].errors && f['name'].errors['required']">Name is required.</span>
+                    <span *ngIf="f['name'].errors&& f['name'].errors['pattern']">Name should only contain alphabets and
+                        spaces. </span>
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+                <input matInput placeholder="State" formControlName="state" name="state">
+                <mat-error
+                    *ngIf="orderDataForm.get('state')?.invalid && (orderDataForm.get('state')?.dirty || orderDataForm.get('state')?.touched)">
+                    <span *ngIf="f['state'].errors && f['state'].errors['required']">State is required.</span>
+                    <span *ngIf="f['state'].errors && f['state'].errors['pattern']">State should only contain alphabets
+                        and spaces. </span>
+                </mat-error>
+            </mat-form-field>
+            <mat-form-field appearance="outline">
+                <input matInput placeholder="Zip" formControlName="zip" name="zip">
+                <mat-error
+                    *ngIf="orderDataForm.get('zip')?.invalid && (orderDataForm.get('zip')?.dirty || orderDataForm.get('zip')?.touched)">
+                    <span *ngIf="f['zip'].errors && f['zip'].errors['required']">Zip is required.</span>
+                    <span *ngIf="f['zip'].errors && f['zip'].errors['maxlength'] ">Zip
+                        should not exceed 5 characters.
+                    </span>
+                    <span *ngIf="f['zip'].errors && f['zip'].errors['minlength']">Zip
+                        should be 5 characters.
+                    </span>
+                    <span *ngIf="f['zip'].errors && f['zip'].errors['pattern']">Zip should only contain numbers. </span>
+                </mat-error>
             </mat-form-field>
 
-            <mat-form-field appearance="outline">
-                <input matInput placeholder="State" name="state" [(ngModel)]="orderData.state" required>
-                <mat-error>State is required</mat-error>
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-                <input matInput placeholder="Zip" name="zip" [(ngModel)]="orderData.zip" required>
-                <mat-error>Zip is required</mat-error>
-            </mat-form-field>
         </div>
-
-        <div class="example-form-row">
+        <div class=" example-form-row">
             <mat-form-field appearance="outline">
-                <input matInput placeholder="Amount" name="amount" [(ngModel)]="orderData.amount" required>
-                <mat-error>Amount is required</mat-error>
+                <input matInput placeholder="Amount" formControlName="amount" name="amount">
+                <mat-error
+                    *ngIf="orderDataForm.get('amount')?.invalid && (orderDataForm.get('amount')?.dirty || orderDataForm.get('amount')?.touched)">
+                    <span *ngIf="f['amount'].errors && f['amount'].errors['required']">Amount is required.</span>
+                    <span *ngIf="f['amount'].errors && f['amount'].errors['pattern']">Amount should be a valid float
+                        number. </span>
+                </mat-error>
             </mat-form-field>
-
             <mat-form-field appearance="outline">
-                <input matInput placeholder="Quantity" name="qty" [(ngModel)]="orderData.qty" required>
-                <mat-error>Quantity is required</mat-error>
+                <input matInput placeholder="Quantity" formControlName="qty" name="qty">
+                <mat-error
+                    *ngIf="orderDataForm.get('qty')?.invalid && (orderDataForm.get('qty')?.dirty || orderDataForm.get('qty')?.touched)">
+                    <span *ngIf="f['qty'].errors && f['qty'].errors['required']">Quantity is required.</span>
+                    <span *ngIf="f['qty'].errors && f['qty'].errors['pattern']">Quantity should be a valid number.
+                    </span>
+                </mat-error>
             </mat-form-field>
-
             <mat-form-field appearance="outline">
-                <input matInput placeholder="Item" name="item" [(ngModel)]="orderData.item" required>
-                <mat-error>Item is required</mat-error>
+                <input matInput placeholder="Item" formControlName="item" name="item">
+                <mat-error
+                    *ngIf="orderDataForm.get('item')?.invalid && (orderDataForm.get('item')?.dirty || orderDataForm.get('item')?.touched)">
+                    <span *ngIf="f['item'].errors && f['item'].errors['required']">Item is required.</span>
+                    <span *ngIf="f['item'].errors && f['item'].errors['pattern']">Item should be alphanumeric. </span>
+                </mat-error>
             </mat-form-field>
         </div>
     </form>
@@ -39,8 +69,8 @@
 </mat-dialog-content>
 <mat-dialog-actions align="end">
     <button mat-button [mat-dialog-close]="false">Cancel</button>
-    <button mat-button (click)="addRecord()" [disabled]="loding" *ngIf="modelData.type=='add'" color="primary"
-        cdkFocusInitial>Save</button>
-    <button mat-button (click)="updateRecord()" [disabled]="loding" *ngIf="modelData.type=='edit'" color="primary"
-        cdkFocusInitial>Update</button>
+    <button mat-button (click)="addRecord()" [disabled]="loding || orderDataForm.invalid" *ngIf="modelData.type=='add'"
+        color="primary" cdkFocusInitial>Save</button>
+    <button mat-button (click)="updateRecord()" [disabled]="loding || orderDataForm.invalid"
+        *ngIf="modelData.type=='edit'" color="primary" cdkFocusInitial>Update</button>
 </mat-dialog-actions>

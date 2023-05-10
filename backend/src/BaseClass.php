@@ -32,8 +32,8 @@ class BaseClass {
         }
         if (empty($input_data['zip'])) {
             $errors['zip'] = "Zip code is required";
-        } else if (strlen($input_data['zip']) != 6) {
-            $errors['zip'] = "Zip code must be 6 digits";
+        } else if (strlen($input_data['zip']) != 5) {
+            $errors['zip'] = "Zip code must be 5 digits";
         }
         if (empty($input_data['amount'])) {
             $errors['amount'] = "Amount is required";

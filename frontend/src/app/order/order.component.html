@@ -8,7 +8,7 @@
             {{ col }}
         </mat-header-cell>
         <mat-cell *matCellDef="let row">
-            <span *ngIf="col=='actions'">
+            <span *ngIf="col=='Actions'">
                 <button mat-raised-button color="primary" (click)="deleteOrder(row)"><mat-icon
                         [matTooltip]="'delete Order'">delete</mat-icon></button>
                 <button mat-raised-button color="primary" (click)="editOrder(row)" style="margin-left: 3px;"><mat-icon
