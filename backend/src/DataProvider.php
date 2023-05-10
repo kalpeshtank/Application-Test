@@ -23,6 +23,10 @@ class DataProvider extends BaseClass implements DataProviderInterface {
         }
     }
 
+    /**
+     * Get all orders
+     * @return array
+     */
     public function getOrders() {
         try {
             $responseData = $this->performFileOperation('read');
@@ -32,6 +36,12 @@ class DataProvider extends BaseClass implements DataProviderInterface {
         }
     }
 
+    /**
+     * Get order by ID
+     *
+     * @param int $id
+     * @return array
+     */
     public function getOrder($id) {
         try {
             $responseData = $this->performFileOperation('read', null, $id);
@@ -41,6 +51,12 @@ class DataProvider extends BaseClass implements DataProviderInterface {
         }
     }
 
+    /**
+     * Create a new order
+     *
+     * @param array $param
+     * @return array
+     */
     public function createOrder($param) {
         try {
             if ($this->validateData($param) === true) {
@@ -51,6 +67,13 @@ class DataProvider extends BaseClass implements DataProviderInterface {
         }
     }
 
+    /**
+     * Update an existing order
+     *
+     * @param int $id
+     * @param array $param
+     * @return array
+     */
     public function updateOrder($id, $param) {
         try {
             if ($this->validateData($param) === true) {
@@ -61,6 +84,12 @@ class DataProvider extends BaseClass implements DataProviderInterface {
         }
     }
 
+    /**
+     * Delete an order
+     *
+     * @param int $id
+     * @return array
+     */
     public function deleteOrder($id) {
         try {
             return $this->performFileOperation('delete', $id);

@@ -10,7 +10,6 @@ class OrderItems extends BaseClass implements DataProviderInterface {
     private $requestMethod;
     private $id;
     private $dataProvider;
-    private $file = "../data/data.csv";
 
     public function __construct($requestMethod, $id) {
         $this->requestMethod = $requestMethod;
@@ -18,6 +17,11 @@ class OrderItems extends BaseClass implements DataProviderInterface {
         $this->dataProvider = new DataProvider();
     }
 
+    /**
+     * Process the incoming request
+     *
+     * @return array
+     */
     public function processRequest() {
         switch ($this->requestMethod) {
             case 'GET':
@@ -44,6 +48,11 @@ class OrderItems extends BaseClass implements DataProviderInterface {
         }
     }
 
+    /**
+     * Get all orders
+     *
+     * @return array
+     */
     public function getOrders() {
         try {
             return $this->dataProvider->getOrders();
@@ -52,6 +61,12 @@ class OrderItems extends BaseClass implements DataProviderInterface {
         }
     }
 
+    /**
+     * Get order by ID
+     *
+     * @param int $id
+     * @return array
+     */
     public function getOrder($id) {
         try {
             return $this->dataProvider->getOrder($id);
@@ -60,6 +75,12 @@ class OrderItems extends BaseClass implements DataProviderInterface {
         }
     }
 
+    /**
+     * Create a new order
+     *
+     * @param array $param
+     * @return array
+     */
     public function createOrder($param) {
         try {
             return $this->dataProvider->createOrder($param);
@@ -68,6 +89,13 @@ class OrderItems extends BaseClass implements DataProviderInterface {
         }
     }
 
+    /**
+     * Update an existing order
+     * 
+     * @param int $id
+     * @param array $param
+     * @return array
+     */
     public function updateOrder($id, $param) {
         try {
             if ($this->validateData($param) === true) {
@@ -78,6 +106,12 @@ class OrderItems extends BaseClass implements DataProviderInterface {
         }
     }
 
+    /**
+     * Delete an order
+     *
+     * @param int $id
+     * @return array
+     */
     public function deleteOrder($id) {
         try {
             return $this->dataProvider->deleteOrder($id);

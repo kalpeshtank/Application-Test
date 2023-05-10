@@ -6,6 +6,13 @@ trait CsvDataTrait {
 
     protected $file = "../data/data.csv";
 
+    /**
+     * Function to perform file operations based on the provided operation
+     * @param type $operation
+     * @param type $data
+     * @param type $id
+     * @return type
+     */
     protected function performFileOperation($operation, $data = null, $id = null) {
         $file = fopen($this->file, 'r+');
         flock($file, LOCK_EX);
@@ -32,6 +39,11 @@ trait CsvDataTrait {
         return $result;
     }
 
+    /**
+     * Function to read all CSV data
+     * @param type $file
+     * @return array
+     */
     protected function readCsvData($file) {
         $orders = array();
         $headers = array();
@@ -50,6 +62,12 @@ trait CsvDataTrait {
         return ['headers' => $headers, 'data' => $orders];
     }
 
+    /**
+     * Function to read CSV data by ID
+     * @param type $file
+     * @param type $id
+     * @return array
+     */
     protected function readCsvDataById($file, $id) {
         $row_data = [];
         while (($row = fgetcsv($file)) !== false) {
@@ -70,6 +88,12 @@ trait CsvDataTrait {
         return $row_data;
     }
 
+    /**
+     * Function to create a new CSV record
+     * @param type $file
+     * @param type $data
+     * @return type
+     */
     protected function createCsvData($file, $data) {
         // Create a new array with the values of the new record
         $newData = array(
@@ -88,6 +112,13 @@ trait CsvDataTrait {
         }
     }
 
+    /**
+     * Function to update CSV data
+     * @param type $file
+     * @param type $input_data
+     * @param type $id
+     * @return type
+     */
     protected function updateCsvData($file, $input_data, $id) {
         $isFoundRecord = false;
         $records = [];
@@ -124,6 +155,11 @@ trait CsvDataTrait {
         }
     }
 
+    /**
+     * Function to get the next ID for a new record
+     * @param type $file
+     * @return number 
+     */
     protected function getId($file) {
         $rows = [];
         $id = 0;
@@ -142,6 +178,12 @@ trait CsvDataTrait {
         return $id;
     }
 
+    /**
+     * Function to delete CSV data by ID
+     * @param type $file
+     * @param type $id
+     * @return response
+     */
     protected function deleteCsvData($file, $id) {
         $rows = [];
         while (($data = fgetcsv($file)) !== false) {
