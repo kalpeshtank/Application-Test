@@ -12,6 +12,7 @@ export class AddEditPopupComponent implements OnInit {
   orderDataForm: FormGroup;
   id: string = '';
   modelData: any;
+  title: string = "Create order";
   loding: boolean = false;
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
@@ -30,6 +31,7 @@ export class AddEditPopupComponent implements OnInit {
       item: ['', [Validators.required, Validators.pattern('^[a-zA-Z0-9]+$')]]
     });
     this.modelData = data;
+    this.title = this.modelData.type == 'edit' ? 'Edit order' : 'Create order';
     if (data.data) {
       this.id = data.data.id;
       this.orderDataForm.patchValue({
