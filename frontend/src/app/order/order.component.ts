@@ -5,6 +5,7 @@ import { ApiService } from '../api.service';
 import { MatDialog } from '@angular/material/dialog';
 import { AddEditPopupComponent } from './add-edit-popup/add-edit-popup.component';
 import Swal from 'sweetalert2'
+import { OrderInterface } from './order-interface';
 
 @Component({
   selector: 'app-order',
@@ -14,7 +15,7 @@ import Swal from 'sweetalert2'
 export class OrderComponent implements OnInit {
   displayedColumns: any[] = [];
   tableObj = {
-    dataSource: new MatTableDataSource([]),
+    dataSource: new MatTableDataSource<OrderInterface>([]),
   };
   loading: boolean = false;
   @ViewChild(MatSort) sort!: MatSort;
@@ -35,15 +36,15 @@ export class OrderComponent implements OnInit {
           let headers = resonse['data']['headers'];
           headers.push('Actions');
           this.displayedColumns = headers;// Sets the displayed columns for the table
-          this.tableObj.dataSource = new MatTableDataSource(resonse.data.data);// Sets the data source for the MatTable
+          this.tableObj.dataSource = new MatTableDataSource<OrderInterface>(resonse.data.data);// Sets the data source for the MatTable
         } else {
           this.displayedColumns = [];
-          this.tableObj.dataSource = new MatTableDataSource([]);// Sets an empty data source
+          this.tableObj.dataSource = new MatTableDataSource<OrderInterface>([]);// Sets an empty data source
         }
         this.loading = false;// Data loading is complete
       },
       error: (err) => {
-        this.tableObj.dataSource = new MatTableDataSource([]);// Sets an empty data source
+        this.tableObj.dataSource = new MatTableDataSource<OrderInterface>([]);// Sets an empty data source
         this.loading = false;// Data loading is complete
         let mergedString = "";
         if (err.error.data) {
@@ -112,5 +113,5 @@ export class OrderComponent implements OnInit {
       }
     })
   }
-
 }
+
