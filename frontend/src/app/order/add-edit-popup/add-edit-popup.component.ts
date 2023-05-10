@@ -9,11 +9,11 @@ import Swal from 'sweetalert2'
   styleUrls: ['./add-edit-popup.component.css']
 })
 export class AddEditPopupComponent implements OnInit {
-  orderDataForm: FormGroup;
-  id: string = '';
-  modelData: any;
-  title: string = "Create order";
-  loding: boolean = false;
+  orderDataForm: FormGroup; // Form group for the order data
+  id: string = ''; // ID of the order
+  modelData: any; // Data passed to the dialog component
+  title: string = "Create order"; // Title of the dialog
+  loading: boolean = false; // Indicates if data is being loaded
   constructor(
     @Inject(MAT_DIALOG_DATA) public data: any,
     private apiData: ApiService,
@@ -40,44 +40,47 @@ export class AddEditPopupComponent implements OnInit {
       });
     }
   }
+  // Getter to access form controls easily
   get f(): { [key: string]: AbstractControl } {
     return this.orderDataForm.controls;
   }
   ngOnInit() {
   }
+  // Add a new order record
   addRecord() {
-    this.loding = true;
+    this.loading = true;
     this.apiData.create('order', this.orderDataForm.value).subscribe({
       next: (resonse: any) => {
         if (resonse.status == 200) {
           Swal.fire('Created!', resonse.message, 'success');
           this.dialogRef.close(true);
         }
-        this.loding = false;
+        this.loading = false;
       },
       error: (err) => {
         const values = Object.values(err.error.data);
         const mergedString = values.join(', ');
         Swal.fire('Error!', mergedString, 'error');
-        this.loding = false;
+        this.loading = false;
       }
     });
   }
+  // Update an existing order record
   updateRecord() {
-    this.loding = true;
+    this.loading = true;
     this.apiData.update('order/' + this.id, this.orderDataForm.value).subscribe({
       next: (resonse: any) => {
         if (resonse.status == 200) {
           Swal.fire('Updated!', resonse.message, 'success');
           this.dialogRef.close(true);
         }
-        this.loding = false;
+        this.loading = false;
       },
       error: (err) => {
         const values = Object.values(err.error.data);
         const mergedString = values.join(', ');
         Swal.fire('Error!', mergedString, 'error');
-        this.loding = false;
+        this.loading = false;
       }
     });
   }

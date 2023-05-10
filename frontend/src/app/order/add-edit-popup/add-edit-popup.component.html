@@ -69,8 +69,8 @@
 </mat-dialog-content>
 <mat-dialog-actions align="end">
     <button mat-button [mat-dialog-close]="false">Cancel</button>
-    <button mat-button (click)="addRecord()" [disabled]="loding || orderDataForm.invalid" *ngIf="modelData.type=='add'"
+    <button mat-button (click)="addRecord()" [disabled]="loading || orderDataForm.invalid" *ngIf="modelData.type=='add'"
         color="primary" cdkFocusInitial>Save</button>
-    <button mat-button (click)="updateRecord()" [disabled]="loding || orderDataForm.invalid"
+    <button mat-button (click)="updateRecord()" [disabled]="loading || orderDataForm.invalid"
         *ngIf="modelData.type=='edit'" color="primary" cdkFocusInitial>Update</button>
 </mat-dialog-actions>
