@@ -58,8 +58,13 @@ export class AddEditPopupComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        const values = Object.values(err.error.data);
-        const mergedString = values.join(', ');
+        let mergedString = "";
+        if (err.error.data) {
+          const values = Object.values(err.error.data);
+          mergedString = values.join(', ');
+        } else {
+          mergedString = err.error.message;
+        }
         Swal.fire('Error!', mergedString, 'error');
         this.loading = false;
       }
@@ -77,8 +82,13 @@ export class AddEditPopupComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        const values = Object.values(err.error.data);
-        const mergedString = values.join(', ');
+        let mergedString = "";
+        if (err.error.data) {
+          const values = Object.values(err.error.data);
+          mergedString = values.join(', ');
+        } else {
+          mergedString = err.error.message;
+        }
         Swal.fire('Error!', mergedString, 'error');
         this.loading = false;
       }

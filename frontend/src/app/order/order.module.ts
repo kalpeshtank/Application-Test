@@ -5,6 +5,7 @@ import { AddEditPopupComponent } from './add-edit-popup/add-edit-popup.component
 import { RouterModule, Routes } from '@angular/router';
 import { MaterialModuleModule } from '../shared/material-module/material-module.module';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { GlobalSearchComponent } from './global-search/global-search.component';
 
 const routes: Routes = [
   {
@@ -13,7 +14,7 @@ const routes: Routes = [
   },
 ]
 @NgModule({
-  declarations: [OrderComponent, AddEditPopupComponent],
+  declarations: [OrderComponent, AddEditPopupComponent, GlobalSearchComponent],
   imports: [
     CommonModule,
     FormsModule,

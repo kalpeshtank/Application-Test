@@ -45,6 +45,14 @@ export class OrderComponent implements OnInit {
       error: (err) => {
         this.tableObj.dataSource = new MatTableDataSource([]);// Sets an empty data source
         this.loading = false;// Data loading is complete
+        let mergedString = "";
+        if (err.error.data) {
+          const values = Object.values(err.error.data);
+          mergedString = values.join(', ');
+        } else {
+          mergedString = err.error.message;
+        }
+        Swal.fire('Error!', mergedString, 'error');
       }
     });
   }
@@ -91,7 +99,14 @@ export class OrderComponent implements OnInit {
             }
           },
           error: (err) => {
-            Swal.fire('Error!', err.statusText, 'error')
+            let mergedString = "";
+            if (err.error.data) {
+              const values = Object.values(err.error.data);
+              mergedString = values.join(', ');
+            } else {
+              mergedString = err.error.message;
+            }
+            Swal.fire('Error!', mergedString, 'error');
           }
         });
       }
