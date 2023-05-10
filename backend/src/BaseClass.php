@@ -4,13 +4,25 @@ namespace Src;
 
 class BaseClass {
 
+    /**
+     * Retrieve input data from the request body.
+     *
+     * @return array The input data as an associative array.
+     */
     public function getInput() {
         $input_data = file_get_contents('php://input');
         return (array) json_decode($input_data);
     }
 
+    /**
+     * Validate the input data.
+     *
+     * @param array $input_data The input data to validate.
+     * @return mixed Either true if the data is valid or a response with error messages.
+     */
     protected function validateData($input_data) {
-        $errors = array(); // to store error messages
+        // to store error messages
+        $errors = array();
         // validate required fields
         if (empty($input_data['name'])) {
             $errors['name'] = "Name is required";
@@ -44,6 +56,13 @@ class BaseClass {
         }
     }
 
+    /**
+     * Send a JSON response.
+     *
+     * @param int $status The HTTP status code.
+     * @param array $data The response data.
+     * @param string|null $message The optional message.
+     */
     public function sendResponse($status, $data = array(), $message = null) {
         $response = array();
         if ($message != null) {
@@ -57,14 +76,25 @@ class BaseClass {
         echo json_encode($response);
     }
 
+    /**
+     * Send a 404 Not Found response.
+     */
     public function notFoundResponse() {
         $this->sendResponse(404, [], "Not Found");
     }
 
+    /**
+     * Send a 422 Unprocessable Entity response.
+     */
     public function unprocessableEntityResponse() {
         $this->sendResponse(422, [], "Invalid input");
     }
 
+    /**
+     * Set the appropriate headers based on the status code.
+     *
+     * @param int $statusCode The HTTP status code.
+     */
     private function setHeaders($statusCode) {
         switch ($statusCode) {
             case 200:
