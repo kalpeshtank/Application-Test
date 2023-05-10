@@ -2,3 +2,4 @@
 **/backend/nbproject/Makefile-*.mk
 **/backend/nbproject/Package-*.bash
 *.properties
+*.xml
