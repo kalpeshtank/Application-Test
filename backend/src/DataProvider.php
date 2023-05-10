@@ -25,7 +25,7 @@ class DataProvider extends BaseClass implements DataProviderInterface {
 
     public function getOrders() {
         try {
-            $responseData = $this->readCsvData();
+            $responseData = $this->performFileOperation('read');
             return $this->sendResponse(200, $responseData, "success");
         } catch (\ErrorException $e) {
             return $this->sendResponse(404, [], $e->getMessage());
@@ -34,7 +34,7 @@ class DataProvider extends BaseClass implements DataProviderInterface {
 
     public function getOrder($id) {
         try {
-            $responseData = $this->getCsvDataById($id);
+            $responseData = $this->performFileOperation('read', null, $id);
             return $this->sendResponse(200, $responseData, "success");
         } catch (\ErrorException $e) {
             return $this->sendResponse(404, [], $e->getMessage());
@@ -44,7 +44,7 @@ class DataProvider extends BaseClass implements DataProviderInterface {
     public function createOrder($param) {
         try {
             if ($this->validateData($param) === true) {
-                return $this->createOrderData($param);
+                return $this->performFileOperation('add', $param);
             }
         } catch (\ErrorException $e) {
             return $this->sendResponse(404, [], $e->getMessage());
@@ -54,7 +54,7 @@ class DataProvider extends BaseClass implements DataProviderInterface {
     public function updateOrder($id, $param) {
         try {
             if ($this->validateData($param) === true) {
-                return $this->updateOrderData($id, $param);
+                return $this->performFileOperation('write', $param, $id);
             }
         } catch (\ErrorException $e) {
             return $this->sendResponse(404, [], $e->getMessage());
@@ -63,7 +63,7 @@ class DataProvider extends BaseClass implements DataProviderInterface {
 
     public function deleteOrder($id) {
         try {
-            return $this->deleteOrderData($id);
+            return $this->performFileOperation('delete', $id);
         } catch (\ErrorException $e) {
             return $this->sendResponse(404, [], $e->getMessage());
         }
