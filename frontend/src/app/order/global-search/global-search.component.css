@@ -1,0 +1,11 @@
+.search-class {
+    margin-bottom: 10px;
+}
+
+::ng-deep .search-class .mat-form-field-wrapper {
+    background-color: #f5f5f5;
+    padding: 10px;
+    border-radius: 4px;
+    width: 1000px;
+    /* Increase or adjust the width as per your preference */
+}

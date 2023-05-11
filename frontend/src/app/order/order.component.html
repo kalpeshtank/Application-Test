@@ -2,6 +2,7 @@
     <h2 class="table-title">Orders</h2>
     <button mat-raised-button color="primary" (click)="addOrder()">Add Order</button>
 </div>
+<app-global-search (searchDataEvent)="searchData($event)"></app-global-search>
 <mat-table class="table table-hover" [dataSource]="tableObj.dataSource" matSort>
     <ng-container [matColumnDef]="col" *ngFor="let col of displayedColumns; let i = index">
         <mat-header-cell *matHeaderCellDef mat-sort-header style="text-transform:uppercase;">
@@ -23,3 +24,6 @@
     <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>
     <mat-row *matRowDef="let row; columns: displayedColumns"></mat-row>
 </mat-table>
+<mat-paginator [pageSizeOptions]="tableObj.pageSizeOptions" [pageSize]="tableObj.pageSize"
+    [pageIndex]="tableObj.pageIndex" [length]="tableObj.dataSource.data.length" (page)="onPageChange($event)">
+</mat-paginator>

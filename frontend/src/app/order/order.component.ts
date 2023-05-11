@@ -1,5 +1,6 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatSort } from '@angular/material/sort';
+import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { ApiService } from '../api.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -14,17 +15,22 @@ import { OrderInterface } from './order-interface';
 })
 export class OrderComponent implements OnInit {
   displayedColumns: any[] = [];
+  tableRowData: OrderInterface[] = [];
   tableObj = {
     dataSource: new MatTableDataSource<OrderInterface>([]),
+    pageSizeOptions: [5, 10, 25, 50],
+    pageSize: 10,
+    pageIndex: 0,
+    length: 0
   };
   loading: boolean = false;
   @ViewChild(MatSort) sort!: MatSort;
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
   constructor(private apiData: ApiService,
     public dialog: MatDialog) { }
 
   async ngOnInit() {
     await this.getTableData();// Fetches the table data
-    this.tableObj.dataSource.sort = this.sort;// Assigns the MatSort directive to the data source
   }
   // Fetches the data for the table
   getTableData() {
@@ -36,15 +42,21 @@ export class OrderComponent implements OnInit {
           let headers = resonse['data']['headers'];
           headers.push('Actions');
           this.displayedColumns = headers;// Sets the displayed columns for the table
-          this.tableObj.dataSource = new MatTableDataSource<OrderInterface>(resonse.data.data);// Sets the data source for the MatTable
+          this.tableRowData = resonse.data.data;
+          this.tableObj.dataSource = new MatTableDataSource<OrderInterface>(this.tableRowData);// Sets the data source for the MatTable
+          this.tableObj.length = this.tableRowData.length; // Sets the total length for pagination
+          this.tableObj.dataSource.paginator = this.paginator; // Update the paginator reference
+          this.tableObj.dataSource.sort = this.sort;// Assigns the MatSort directive to the data source
         } else {
           this.displayedColumns = [];
           this.tableObj.dataSource = new MatTableDataSource<OrderInterface>([]);// Sets an empty data source
+          this.tableObj.length = 0;
         }
         this.loading = false;// Data loading is complete
       },
       error: (err) => {
         this.tableObj.dataSource = new MatTableDataSource<OrderInterface>([]);// Sets an empty data source
+        this.tableObj.length = 0;
         this.loading = false;// Data loading is complete
         let mergedString = "";
         if (err.error.data) {
@@ -57,6 +69,12 @@ export class OrderComponent implements OnInit {
       }
     });
   }
+  // filter data from table
+  searchData(eventData: string) {
+    // Filter the data based on search query
+    this.tableObj.dataSource.filter = eventData.trim().toLowerCase();
+  }
+
   // Opens the edit order dialog
   editOrder(row: any) {
     const dialogRef = this.dialog.open(AddEditPopupComponent, {
@@ -112,6 +130,11 @@ export class OrderComponent implements OnInit {
         });
       }
     })
+  }
+  // Handles the page change event
+  onPageChange(event: any) {
+    this.tableObj.pageIndex = event.pageIndex;
+    this.tableObj.pageSize = event.pageSize;
   }
 }
 

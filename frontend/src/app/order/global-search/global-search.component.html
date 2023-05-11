@@ -1,1 +1,6 @@
-<p>global-search works!</p>
+<div class="search-class">
+    <mat-form-field class="example-full-width" appearance="outline">
+        <mat-label>Search</mat-label>
+        <input matInput placeholder="Search" [(ngModel)]="searchText" (input)="getTableData()">
+    </mat-form-field>
+</div>
