@@ -7,6 +7,8 @@ import { MatDialog } from '@angular/material/dialog';
 import { AddEditPopupComponent } from './add-edit-popup/add-edit-popup.component';
 import Swal from 'sweetalert2'
 import { OrderInterface } from './order-interface';
+import { SelectionModel } from '@angular/cdk/collections';
+import { MatCheckboxChange } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-order',
@@ -16,6 +18,7 @@ import { OrderInterface } from './order-interface';
 export class OrderComponent implements OnInit {
   displayedColumns: any[] = [];
   tableRowData: OrderInterface[] = [];
+  selection = new SelectionModel<OrderInterface>(true, []);
   tableObj = {
     dataSource: new MatTableDataSource<OrderInterface>([]),
     pageSizeOptions: [5, 10, 25, 50],
@@ -39,9 +42,10 @@ export class OrderComponent implements OnInit {
     this.apiData.getData('orders').subscribe({
       next: (resonse: any) => {
         if (resonse.status == 200) {
+
           let headers = resonse['data']['headers'];
           headers.push('Actions');
-          this.displayedColumns = headers;// Sets the displayed columns for the table
+          this.displayedColumns = ['checkbox', ...headers];// Sets the displayed columns for the table
           this.tableRowData = resonse.data.data;
           this.tableObj.dataSource = new MatTableDataSource<OrderInterface>(this.tableRowData);// Sets the data source for the MatTable
           this.tableObj.length = this.tableRowData.length; // Sets the total length for pagination
@@ -115,6 +119,55 @@ export class OrderComponent implements OnInit {
             if (resonse.status == 200) {
               Swal.fire('Deleted!', 'Your Order has been deleted successfully.', 'success');
               this.getTableData();// Refreshes the table data after deleting the order
+            }
+          },
+          error: (err) => {
+            let mergedString = "";
+            if (err.error.data) {
+              const values = Object.values(err.error.data);
+              mergedString = values.join(', ');
+            } else {
+              mergedString = err.error.message;
+            }
+            Swal.fire('Error!', mergedString, 'error');
+          }
+        });
+      }
+    })
+  }
+  /** Whether the number of selected elements matches the total number of rows. */
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.tableObj.dataSource.data.length;
+    return numSelected === numRows;
+  }
+
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  masterToggle() {
+    this.isAllSelected() ?
+      this.selection.clear() :
+      this.tableObj.dataSource.data.forEach(row => this.selection.select(row));
+  }
+  // Method to delete selected orders
+  deleteSelectedOrders() {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "Are you sure you want to delete the selected orders? You won't be able to revert this!",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, delete them!'
+    }).then((result) => {
+      if (result.isConfirmed) {
+        const selectedIds = this.selection.selected.map(order => order.id);
+        // Calls the API service to delete the selected orders
+        this.apiData.delete('orders', selectedIds).subscribe({
+          next: (resonse: any) => {
+            if (resonse.status == 200) {
+              Swal.fire('Deleted!', 'Selected orders have been deleted successfully.', 'success');
+              this.getTableData();// Refreshes the table data after deleting the orders
+              this.selection.clear();// Clear the selected orders array
             }
           },
           error: (err) => {

@@ -1,16 +1,10 @@
 id,name,state,zip,amount,qty,item
-1,Matthew,MD,63556,48,8,Q8E
-2,Jessica,IN,16055,21,2,A1
 3,Jane,MD,31304,53.8,1,N5
 4,James,IL,67866,78.8,1,E5
 5,David,WI,24342,11,3,L3
 6,Sophia,MD,75317,12.3,8,O6
 7,Sophia,TN,17785,63.2,4,I9
 8,Isabella,IN,47924,94.7,10,D4
-9,Robert,AZ,23650,86.2,10,P7
-10,Matthew,IL,64175,27.5,1,K2
-11,Jane,MA,98567,71.7,6,C3
-12,Jane,MI,70593,81.1,9,B2
 13,Mia,NJ,14494,48.8,6,R9
 14,Olivia,MI,60053,14.4,5,F6
 15,Mia,NC,67743,12.5,6,S1

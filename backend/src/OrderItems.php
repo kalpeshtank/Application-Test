@@ -40,7 +40,13 @@ class OrderItems extends BaseClass implements DataProviderInterface {
                 return $this->updateOrder($this->id, $param);
                 break;
             case 'DELETE':
-                return $this->deleteOrder($this->id);
+                if ($this->id) {
+                    // Delete a single order when ID is provided
+                    return $this->deleteOrder($this->id);
+                } else {
+                    // Delete multiple orders when array of IDs is provided
+                    return $this->deleteOrder(explode(',', $_GET['orderIds']));
+                }
                 break;
             default:
                 return $this->notFoundResponse();

@@ -31,7 +31,11 @@ trait CsvDataTrait {
                 $result = $this->updateCsvData($file, $data, $id);
                 break;
             case 'delete':
-                $result = $this->deleteCsvData($file, $data);
+                if (is_array($id)) {
+                    $result = $this->deleteMultipleCsvData($file, $id);
+                } else {
+                    $result = $this->deleteCsvData($file, $id);
+                }
                 break;
         }
         flock($file, LOCK_UN);
@@ -197,6 +201,30 @@ trait CsvDataTrait {
             fputcsv($file, $row);
         }
         return $this->sendResponse(200, null, "OrderItem Deleted");
+    }
+
+    /**
+     * Function to delete multiple CSV records
+     * @param array $ids
+     * @return response
+     */
+    protected function deleteMultipleCsvData($file, $ids) {
+        $rows = [];
+        $deletedIds = [];
+        while (($data = fgetcsv($file)) !== false) {
+            $recordId = $data[0]; // Assuming the record ID is in the first column
+            if (in_array($recordId, $ids)) {
+                $deletedIds[] = $recordId;
+            } else {
+                $rows[] = $data;
+            }
+        }
+        fseek($file, 0);
+        ftruncate($file, 0);
+        foreach ($rows as $row) {
+            fputcsv($file, $row);
+        }
+        return $this->sendResponse(200, $deletedIds, "Records deleted successfully");
     }
 
 }

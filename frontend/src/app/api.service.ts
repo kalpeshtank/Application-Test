@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
 
 @Injectable({
@@ -21,7 +21,11 @@ export class ApiService {
     return this.http.put(environment.APP_URL + url, data);
   }
   // Delete a record using the API
-  delete(url: string) {
-    return this.http.delete(environment.APP_URL + url);
+  delete(url: string, data: any = []) {
+    // Create the request headers
+    const headers = new HttpHeaders();
+    // Create the request parameters
+    const params = new HttpParams().set('orderIds', data.join(','));
+    return this.http.delete(environment.APP_URL + url, { headers, params });
   }
 }

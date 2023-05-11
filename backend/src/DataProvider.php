@@ -92,7 +92,7 @@ class DataProvider extends BaseClass implements DataProviderInterface {
      */
     public function deleteOrder($id) {
         try {
-            return $this->performFileOperation('delete', $id);
+            return $this->performFileOperation('delete', null, $id);
         } catch (\ErrorException $e) {
             return $this->sendResponse(404, [], $e->getMessage());
         }
