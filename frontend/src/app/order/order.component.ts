@@ -8,7 +8,6 @@ import { AddEditPopupComponent } from './add-edit-popup/add-edit-popup.component
 import Swal from 'sweetalert2'
 import { OrderInterface } from './order-interface';
 import { SelectionModel } from '@angular/cdk/collections';
-import { MatCheckboxChange } from '@angular/material/checkbox';
 
 @Component({
   selector: 'app-order',
@@ -30,7 +29,8 @@ export class OrderComponent implements OnInit {
   @ViewChild(MatSort) sort!: MatSort;
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   constructor(private apiData: ApiService,
-    public dialog: MatDialog) { }
+    public dialog: MatDialog) {
+  }
 
   async ngOnInit() {
     await this.getTableData();// Fetches the table data

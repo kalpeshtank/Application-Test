@@ -1,11 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { environment } from 'src/environments/environment';
+import { BehaviorSubject, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
+  private titleSubject: BehaviorSubject<string> = new BehaviorSubject<string>('GreenIT Application Challenge');
 
   constructor(private http: HttpClient) { }
   // Fetch data from the API
@@ -27,5 +29,12 @@ export class ApiService {
     // Create the request parameters
     const params = new HttpParams().set('orderIds', data.join(','));
     return this.http.delete(environment.APP_URL + url, { headers, params });
+  }
+  setTitle(title: string): void {
+    this.titleSubject.next(title);
+  }
+
+  getTitle(): Observable<string> {
+    return this.titleSubject.asObservable();
   }
 }

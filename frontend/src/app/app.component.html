@@ -1,25 +1,7 @@
 <mat-toolbar color="primary">
-    <button mat-icon-button class="example-icon" aria-label="Example icon-button with menu icon">
-        <mat-icon>menu</mat-icon>
-    </button>
-    <span>Application Test</span>
-    <span class="example-spacer"></span>
+    <span>{{title}}</span>
 </mat-toolbar>
-<mat-sidenav-container class="example-container" autosize>
-    <mat-sidenav #sidenav class="example-sidenav" mode="side" opened="true" (mouseenter)="mouseenter()"
-        (mouseleave)="mouseleave()">
-        <mat-nav-list>
-            <mat-list-item (click)="showSubmenu = !showSubmenu" class="parent">
-                <span class="full-width" *ngIf="isExpanded || isShowing">Parent Menu</span>
-                <mat-icon mat-list-icon>home</mat-icon>
-            </mat-list-item>
-        </mat-nav-list>
-        <mat-nav-list>
-        </mat-nav-list>
-    </mat-sidenav>
 
-    <div class="example-sidenav-content">
-        <router-outlet></router-outlet>
-    </div>
-
-</mat-sidenav-container>
+<div class="example-sidenav-content">
+    <router-outlet></router-outlet>
+</div>
