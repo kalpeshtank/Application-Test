@@ -7,7 +7,6 @@
 - Request: GET /orders
 
 **Expected Output:**
-![all orders](https://github.com/kalpeshtank/Application-Test/blob/main/frontend/list.jpg)
 - Status Code: 200
 - Response Body: 
     {
@@ -62,7 +61,7 @@
             }]
         }
     }
-
+![all orders](https://github.com/kalpeshtank/Application-Test/blob/main/frontend/list.jpg)
 **Result:**
 Pass
 
@@ -106,7 +105,6 @@ Pass
     }
 }
 ![update orders](https://github.com/kalpeshtank/Application-Test/blob/main/frontend/update.jpg)
-
 **Result:**
 Pass
 
