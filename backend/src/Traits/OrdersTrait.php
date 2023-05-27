@@ -2,11 +2,11 @@
 
 namespace Src\Traits;
 
-trait CsvDataTrait {
+trait OrdersTrait {
 
     protected $file = "../data/data.csv";
 
-    /**
+    /**Interface
      * Function to perform file operations based on the provided operation
      * @param type $operation
      * @param type $data

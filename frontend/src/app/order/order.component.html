@@ -1,7 +1,11 @@
 <div class="table-header">
     <h2 class="table-title">Orders</h2>
-    <button mat-raised-button color="primary" (click)="addOrder()">Add Order</button>
-    <button mat-raised-button color="primary" (click)="deleteSelectedOrders()">delete Selected Orders</button>
+    <div class="button-group">
+        <button mat-raised-button color="primary" (click)="addOrder()"
+            [matTooltip]="'Add new Order'"><mat-icon>add</mat-icon></button>
+        <button mat-raised-button color="primary" (click)="deleteSelectedOrders()"
+            [matTooltip]="'Delete Order'"><mat-icon>delete</mat-icon></button>
+    </div>
 </div>
 <app-global-search (searchDataEvent)="searchData($event)"></app-global-search>
 
@@ -49,10 +53,10 @@
     <ng-container matColumnDef="Actions">
         <mat-header-cell *matHeaderCellDef mat-sort-header style="text-transform:uppercase;"> Actions </mat-header-cell>
         <mat-cell *matCellDef="let row">
-            <button mat-raised-button color="primary" (click)="deleteOrder(row)"><mat-icon
-                    [matTooltip]="'delete Order'">delete</mat-icon></button>
-            <button mat-raised-button color="primary" (click)="editOrder(row)" style="margin-left: 3px;"><mat-icon
-                    [matTooltip]="'delete Order'">edit</mat-icon></button>
+            <button mat-raised-button color="primary" (click)="deleteOrder(row)"
+                [matTooltip]="'Delete Order'"><mat-icon>delete</mat-icon></button>
+            <button mat-raised-button color="primary" (click)="editOrder(row)" style="margin-left: 3px;"
+                [matTooltip]="'Edit Order'"><mat-icon>edit</mat-icon></button>
         </mat-cell>
     </ng-container>
     <mat-header-row *matHeaderRowDef="displayedColumns; sticky: true"></mat-header-row>

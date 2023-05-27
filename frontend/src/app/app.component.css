@@ -33,3 +33,9 @@ body {
     /* adjust as needed based on the width of the sidenav */
 }
 
+
+
+.text-title {
+    text-align: center;
+    width: 100%;
+}

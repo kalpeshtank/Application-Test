@@ -2,12 +2,12 @@
 
 namespace Src;
 
-use Src\Contracts\DataProviderInterface;
-use Src\Traits\CsvDataTrait;
+use Src\InterfaceFile\OrdersInterface;
+use Src\Traits\OrdersTrait;
 
-class DataProvider extends BaseClass implements DataProviderInterface {
+class DataProvider extends BaseClass implements OrdersInterface {
 
-    use CsvDataTrait;
+    use OrdersTrait;
 
     protected $file = "../data/data.csv";
 
@@ -59,7 +59,7 @@ class DataProvider extends BaseClass implements DataProviderInterface {
      */
     public function createOrder($param) {
         try {
-            if ($this->validateData($param) === true) {
+            if ($this->validateOrderData($param) === true) {
                 return $this->performFileOperation('add', $param);
             }
         } catch (\ErrorException $e) {
@@ -76,7 +76,7 @@ class DataProvider extends BaseClass implements DataProviderInterface {
      */
     public function updateOrder($id, $param) {
         try {
-            if ($this->validateData($param) === true) {
+            if ($this->validateOrderData($param) === true) {
                 return $this->performFileOperation('write', $param, $id);
             }
         } catch (\ErrorException $e) {

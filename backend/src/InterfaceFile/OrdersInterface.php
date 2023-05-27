@@ -1,8 +1,8 @@
 <?php
 
-namespace Src\Contracts;
+namespace Src\InterfaceFile;
 
-interface DataProviderInterface {
+interface OrdersInterface {
 
     /**
      * Get all orders

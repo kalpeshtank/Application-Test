@@ -16,4 +16,8 @@
     font-weight: 500;
 }
 
-
+.button-group {
+    display: flex;
+    gap: 16px;
+    /* Optional: Add some spacing between the buttons */
+}

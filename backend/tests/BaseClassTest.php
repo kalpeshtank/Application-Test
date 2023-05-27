@@ -19,7 +19,7 @@ class BaseClassTest extends TestCase {
             'item' => 'Widget'
         ];
 
-        $result = $baseClass->validateData($inputData);
+        $result = $baseClass->validateOrderData($inputData);
 
         $this->assertTrue($result);
     }

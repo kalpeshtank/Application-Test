@@ -4,7 +4,7 @@ import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { ApiService } from '../api.service';
 import { MatDialog } from '@angular/material/dialog';
-import { AddEditPopupComponent } from './add-edit-popup/add-edit-popup.component';
+import { AddEditPopupComponent } from './add-edit-order/add-edit-popup.component';
 import Swal from 'sweetalert2'
 import { OrderInterface } from './order-interface';
 import { SelectionModel } from '@angular/cdk/collections';
@@ -39,7 +39,7 @@ export class OrderComponent implements OnInit {
   getTableData() {
     this.loading = true; // Indicates that data is being loaded
     // Calls the API service to get data
-    this.apiData.getData('orders').subscribe({
+    this.apiData.getOrderData('orders').subscribe({
       next: (resonse: any) => {
         if (resonse.status == 200) {
 
@@ -80,7 +80,7 @@ export class OrderComponent implements OnInit {
   }
 
   // Opens the edit order dialog
-  editOrder(row: any) {
+  editOrder(row: OrderInterface) {
     const dialogRef = this.dialog.open(AddEditPopupComponent, {
       data: { type: 'edit', data: row },
     });
@@ -102,7 +102,7 @@ export class OrderComponent implements OnInit {
     });
   }
   // Deletes an order
-  deleteOrder(row: any) {
+  deleteOrder(row: OrderInterface) {
     Swal.fire({
       title: 'Are you sure?',
       text: "Are you sure you want to delete this item? You won't be able to revert this!",
@@ -114,7 +114,7 @@ export class OrderComponent implements OnInit {
     }).then((result) => {
       if (result.isConfirmed) {
         // Calls the API service to delete the order
-        this.apiData.delete('order/' + row.id).subscribe({
+        this.apiData.deleteOrder('order/' + row.id).subscribe({
           next: (resonse: any) => {
             if (resonse.status == 200) {
               Swal.fire('Deleted!', 'Your Order has been deleted successfully.', 'success');
@@ -162,7 +162,7 @@ export class OrderComponent implements OnInit {
       if (result.isConfirmed) {
         const selectedIds = this.selection.selected.map(order => order.id);
         // Calls the API service to delete the selected orders
-        this.apiData.delete('orders', selectedIds).subscribe({
+        this.apiData.deleteOrder('orders', selectedIds).subscribe({
           next: (resonse: any) => {
             if (resonse.status == 200) {
               Swal.fire('Deleted!', 'Selected orders have been deleted successfully.', 'success');

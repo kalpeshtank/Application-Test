@@ -2,10 +2,10 @@
 
 namespace Src;
 
-use Src\Contracts\DataProviderInterface;
+use Src\InterfaceFile\OrdersInterface;
 use Src\BaseClass;
 
-class OrderItems extends BaseClass implements DataProviderInterface {
+class OrderItems extends BaseClass implements OrdersInterface {
 
     private $requestMethod;
     private $id;
@@ -104,7 +104,7 @@ class OrderItems extends BaseClass implements DataProviderInterface {
      */
     public function updateOrder($id, $param) {
         try {
-            if ($this->validateData($param) === true) {
+            if ($this->validateOrderData($param) === true) {
                 return $this->dataProvider->updateOrder($id, $param);
             }
         } catch (\ErrorException $e) {

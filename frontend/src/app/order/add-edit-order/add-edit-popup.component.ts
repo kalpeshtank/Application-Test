@@ -49,7 +49,7 @@ export class AddEditPopupComponent implements OnInit {
   // Add a new order record
   addRecord() {
     this.loading = true;
-    this.apiData.create('order', this.orderDataForm.value).subscribe({
+    this.apiData.createOrder('order', this.orderDataForm.value).subscribe({
       next: (resonse: any) => {
         if (resonse.status == 200) {
           Swal.fire('Created!', resonse.message, 'success');
@@ -73,7 +73,7 @@ export class AddEditPopupComponent implements OnInit {
   // Update an existing order record
   updateRecord() {
     this.loading = true;
-    this.apiData.update('order/' + this.id, this.orderDataForm.value).subscribe({
+    this.apiData.deleteOrder('order/' + this.id, this.orderDataForm.value).subscribe({
       next: (resonse: any) => {
         if (resonse.status == 200) {
           Swal.fire('Updated!', resonse.message, 'success');
