@@ -9,7 +9,7 @@ import { Subject, takeUntil } from 'rxjs';
 })
 export class AppComponent implements OnDestroy {
   title: string = "";
-  private destroy$: Subject<void> = new Subject<void>();
+  public destroy$: Subject<void> = new Subject<void>();
 
   constructor(private apiData: ApiService) {
     this.apiData.getTitle().pipe(takeUntil(this.destroy$)).subscribe((title: string) => {

@@ -3,7 +3,7 @@ import { MatSort } from '@angular/material/sort';
 import { MatPaginator } from '@angular/material/paginator';
 import { MatTableDataSource } from '@angular/material/table';
 import { ApiService } from '../api.service';
-import { MatDialog } from '@angular/material/dialog';
+import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { AddEditPopupComponent } from './add-edit-order/add-edit-popup.component';
 import Swal from 'sweetalert2'
 import { OrderInterface } from './order-interface';
@@ -81,7 +81,7 @@ export class OrderComponent implements OnInit {
 
   // Opens the edit order dialog
   editOrder(row: OrderInterface) {
-    const dialogRef = this.dialog.open(AddEditPopupComponent, {
+    const dialogRef: MatDialogRef<AddEditPopupComponent> = this.dialog.open(AddEditPopupComponent, {
       data: { type: 'edit', data: row },
     });
     dialogRef.afterClosed().subscribe(result => {
@@ -92,7 +92,7 @@ export class OrderComponent implements OnInit {
   }
   // Opens the add order dialog
   addOrder() {
-    const dialogRef = this.dialog.open(AddEditPopupComponent, {
+    const dialogRef: MatDialogRef<AddEditPopupComponent> = this.dialog.open(AddEditPopupComponent, {
       data: { type: 'add' },
     });
     dialogRef.afterClosed().subscribe(result => {

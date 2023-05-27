@@ -73,7 +73,7 @@ export class AddEditPopupComponent implements OnInit {
   // Update an existing order record
   updateRecord() {
     this.loading = true;
-    this.apiData.deleteOrder('order/' + this.id, this.orderDataForm.value).subscribe({
+    this.apiData.updateOrder('order/' + this.id, this.orderDataForm.value).subscribe({
       next: (resonse: any) => {
         if (resonse.status == 200) {
           Swal.fire('Updated!', resonse.message, 'success');
