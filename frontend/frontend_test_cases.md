@@ -256,3 +256,6 @@ Pass
 ![delete multiple orders](https://github.com/kalpeshtank/Application-Test/blob/main/frontend/delete_m.jpg)
 **Result:**
 Pass
+### Test Case result:
+![delete multiple orders](https://github.com/kalpeshtank/Application-Test/blob/main/frontend/test_case_result.jpg)
+
