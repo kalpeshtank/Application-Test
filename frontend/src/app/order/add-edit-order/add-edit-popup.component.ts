@@ -10,11 +10,11 @@ import { OrderInterface } from '../order-interface';
   styleUrls: ['./add-edit-popup.component.css']
 })
 export class AddEditPopupComponent implements OnInit {
-  orderDataForm: FormGroup; // Form group for the order data
+  orderDataForm: FormGroup; // Form group for the order_data
   id: string = ''; // ID of the order
   modelData: OrderInterface; // Data passed to the dialog component
   title: string = "Create order"; // Title of the dialog
-  loading: boolean = false; // Indicates if data is being loaded
+  loading: boolean = false; // Indicates if order_data is being loaded
   constructor(
     @Inject(MAT_DIALOG_DATA) public orderItem: any,
     private apiData: ApiService,

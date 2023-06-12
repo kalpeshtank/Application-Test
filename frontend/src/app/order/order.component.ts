@@ -35,10 +35,10 @@ export class OrderComponent implements OnInit {
   async ngOnInit() {
     await this.getTableData();// Fetches the table data
   }
-  // Fetches the data for the table
+  // Fetches the order_data for the table
   getTableData() {
-    this.loading = true; // Indicates that data is being loaded
-    // Calls the API service to get data
+    this.loading = true; // Indicates that order_data is being loaded
+    // Calls the API service to get order_data
     this.apiData.getOrderData('orders').subscribe({
       next: (resonse: any) => {
         if (resonse.status == 200) {
@@ -46,19 +46,19 @@ export class OrderComponent implements OnInit {
           headers.push('Actions');
           this.displayedColumns = ['checkbox', ...headers];// Sets the displayed columns for the table
           this.tableRowData = resonse.data.data;
-          this.orderData.dataSource = new MatTableDataSource<OrderInterface>(this.tableRowData);// Sets the data source for the MatTable
+          this.orderData.dataSource = new MatTableDataSource<OrderInterface>(this.tableRowData);// Sets the order_data source for the MatTable
           this.orderData.length = this.tableRowData.length; // Sets the total length for pagination
           this.orderData.dataSource.paginator = this.paginator; // Update the paginator reference
-          this.orderData.dataSource.sort = this.sort;// Assigns the MatSort directive to the data source
+          this.orderData.dataSource.sort = this.sort;// Assigns the MatSort directive to the order_data source
         } else {
           this.displayedColumns = [];
-          this.orderData.dataSource = new MatTableDataSource<OrderInterface>([]);// Sets an empty data source
+          this.orderData.dataSource = new MatTableDataSource<OrderInterface>([]);// Sets an empty order_data source
           this.orderData.length = 0;
         }
         this.loading = false;// Data loading is complete
       },
       error: (err: { error: { data: any, message: string } }) => {
-        this.orderData.dataSource = new MatTableDataSource<OrderInterface>([]);// Sets an empty data source
+        this.orderData.dataSource = new MatTableDataSource<OrderInterface>([]);// Sets an empty order_data source
         this.orderData.length = 0;
         this.loading = false;// Data loading is complete
         let mergedString = "";
@@ -72,9 +72,9 @@ export class OrderComponent implements OnInit {
       }
     });
   }
-  // filter data from table
+  // filter order_data from table
   searchData(eventData: string) {
-    // Filter the data based on search query
+    // Filter the order_data based on search query
     this.orderData.dataSource.filter = eventData.trim().toLowerCase();
   }
 
@@ -85,7 +85,7 @@ export class OrderComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.getTableData();// Refreshes the table data if changes were made
+        this.getTableData();// Refreshes the table order_data if changes were made
       }
     });
   }
@@ -96,7 +96,7 @@ export class OrderComponent implements OnInit {
     });
     dialogRef.afterClosed().subscribe(result => {
       if (result) {
-        this.getTableData();// Refreshes the table data if changes were made
+        this.getTableData();// Refreshes the table order_data if changes were made
       }
     });
   }
@@ -117,7 +117,7 @@ export class OrderComponent implements OnInit {
           next: (resonse: any) => {
             if (resonse.status == 200) {
               Swal.fire('Deleted!', 'Your Order has been deleted successfully.', 'success');
-              this.getTableData();// Refreshes the table data after deleting the order
+              this.getTableData();// Refreshes the table order_data after deleting the order
             }
           },
           error: (err: { error: { data: any, message: string } }) => {
@@ -165,7 +165,7 @@ export class OrderComponent implements OnInit {
           next: (resonse: any) => {
             if (resonse.status == 200) {
               Swal.fire('Deleted!', 'Selected orders have been deleted successfully.', 'success');
-              this.getTableData();// Refreshes the table data after deleting the orders
+              this.getTableData();// Refreshes the table order_data after deleting the orders
               this.selection.clear();// Clear the selected orders array
             }
           },

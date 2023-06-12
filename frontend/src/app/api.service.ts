@@ -11,17 +11,17 @@ export class ApiService {
   private titleSubject: BehaviorSubject<string> = new BehaviorSubject<string>('Green IT Application Challenge');
 
   constructor(private http: HttpClient) { }
-  // Fetch data from the API
+  // Fetch orderData from the API
   getOrderData(url: string) {
     return this.http.get(environment.APP_URL + url);
   }
   // Create a new record using the API
-  createOrder(url: string, data: OrderInterface) {
-    return this.http.post(environment.APP_URL + url, data);
+  createOrder(url: string, orderData: OrderInterface) {
+    return this.http.post(environment.APP_URL + url, orderData);
   }
   // Update an existing record using the API
-  updateOrder(url: string, data: OrderInterface) {
-    return this.http.put(environment.APP_URL + url, data);
+  updateOrder(url: string, orderData: OrderInterface) {
+    return this.http.put(environment.APP_URL + url, orderData);
   }
   // Delete a record using the API
   deleteOrder(url: string, orderId: (number | undefined)[] = []) {
