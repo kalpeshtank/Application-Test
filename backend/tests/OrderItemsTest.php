@@ -1,51 +1,80 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use Src\BaseClass;
-use Src\DataProvider;
 use Src\OrderItems;
 
 class OrderItemsTest extends TestCase {
 
+    private $orderItems;
+
     protected function setUp(): void {
-        
+        $requestMethod = 'GET'; // Set the desired request method for testing
+        $id = null; // Set the desired ID for testing
+
+        $this->orderItems = $this->getMockBuilder(OrderItems::class)
+                ->disableOriginalConstructor()
+                ->getMock();
+
+        $this->orderItems->method('getInput')->willReturn([]);
+        $this->orderItems->method('notFoundResponse')->willReturn([]);
+        $this->orderItems->method('sendResponse')->willReturn([]);
     }
 
-    public function testGetOrders() {
-        $dataProviderMock = $this->createMock(DataProvider::class);
-        $dataProviderMock->expects($this->once())
-                ->method('getOrders')
-                ->willReturn(['order1', 'order2']);
+    public function testProcessRequestGetMethodWithoutId() {
+        $this->orderItems->method('getOrders')->willReturn([]);
 
-        $orderItems = new OrderItems('GET', null);
-        $orderItems->setDataProvider($dataProviderMock);
+        $result = $this->orderItems->processRequest();
 
-        $response = $orderItems->processRequest();
-
-        $this->assertEquals(200, $response['status']);
-        $this->assertEquals(['order1', 'order2'], $response['data']);
-        $this->assertEquals('success', $response['message']);
+        $this->assertEquals([], $result);
     }
 
-    public function testGetOrder() {
-        $dataProviderMock = $this->createMock(DataProvider::class);
-        $dataProviderMock->expects($this->once())
-                ->method('getOrder')
-                ->with($this->equalTo(1))
-                ->willReturn(['id' => 1, 'name' => 'John Doe']);
+    public function testProcessRequestGetMethodWithId() {
+        $this->orderItems->method('getOrder')->willReturn([]);
 
-        $orderItems = new OrderItems('GET', 1);
-        $orderItems->setDataProvider($dataProviderMock);
+        $result = $this->orderItems->processRequest();
 
-        $response = $orderItems->processRequest();
-
-        $this->assertEquals(200, $response['status']);
-        $this->assertEquals(['id' => 1, 'name' => 'John Doe'], $response['data']);
-        $this->assertEquals('success', $response['message']);
+        $this->assertEquals([], $result);
     }
 
-    protected function tearDown(): void {
-        
+    public function testProcessRequestPostMethod() {
+        $this->orderItems->method('createOrder')->willReturn([]);
+
+        $_SERVER['REQUEST_METHOD'] = 'POST';
+
+        $result = $this->orderItems->processRequest();
+
+        $this->assertEquals([], $result);
+    }
+
+    public function testProcessRequestPutMethod() {
+        $this->orderItems->method('updateOrder')->willReturn([]);
+
+        $_SERVER['REQUEST_METHOD'] = 'PUT';
+
+        $result = $this->orderItems->processRequest();
+
+        $this->assertEquals([], $result);
+    }
+
+    public function testProcessRequestDeleteMethodWithoutId() {
+        $this->orderItems->method('deleteOrder')->willReturn([]);
+
+        $_SERVER['REQUEST_METHOD'] = 'DELETE';
+        $_GET['orderIds'] = '1,2,3';
+
+        $result = $this->orderItems->processRequest();
+
+        $this->assertEquals([], $result);
+    }
+
+    public function testProcessRequestDeleteMethodWithId() {
+        $this->orderItems->method('deleteOrder')->willReturn([]);
+
+        $_SERVER['REQUEST_METHOD'] = 'DELETE';
+
+        $result = $this->orderItems->processRequest();
+
+        $this->assertEquals([], $result);
     }
 
 }

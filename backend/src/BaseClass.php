@@ -20,7 +20,7 @@ class BaseClass {
      * @param array $input_data The input data to validate.
      * @return mixed Either true if the data is valid or a response with error messages.
      */
-    protected function validateOrderData($input_data) {
+    public function validateOrderData($input_data) {
         // to store error messages
         $errors = array();
         // validate required fields
@@ -95,7 +95,7 @@ class BaseClass {
      *
      * @param int $statusCode The HTTP status code.
      */
-    private function setHeaders($statusCode) {
+    public function setHeaders($statusCode) {
         switch ($statusCode) {
             case 200:
                 header('HTTP/1.1 200 OK');

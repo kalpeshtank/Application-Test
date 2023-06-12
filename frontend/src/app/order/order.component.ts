@@ -15,10 +15,10 @@ import { SelectionModel } from '@angular/cdk/collections';
   styleUrls: ['./order.component.css']
 })
 export class OrderComponent implements OnInit {
-  displayedColumns: any[] = [];
+  displayedColumns: string[] = [];
   tableRowData: OrderInterface[] = [];
   selection = new SelectionModel<OrderInterface>(true, []);
-  tableObj = {
+  orderData = {
     dataSource: new MatTableDataSource<OrderInterface>([]),
     pageSizeOptions: [5, 10, 25, 50],
     pageSize: 10,
@@ -42,25 +42,24 @@ export class OrderComponent implements OnInit {
     this.apiData.getOrderData('orders').subscribe({
       next: (resonse: any) => {
         if (resonse.status == 200) {
-
           let headers = resonse['data']['headers'];
           headers.push('Actions');
           this.displayedColumns = ['checkbox', ...headers];// Sets the displayed columns for the table
           this.tableRowData = resonse.data.data;
-          this.tableObj.dataSource = new MatTableDataSource<OrderInterface>(this.tableRowData);// Sets the data source for the MatTable
-          this.tableObj.length = this.tableRowData.length; // Sets the total length for pagination
-          this.tableObj.dataSource.paginator = this.paginator; // Update the paginator reference
-          this.tableObj.dataSource.sort = this.sort;// Assigns the MatSort directive to the data source
+          this.orderData.dataSource = new MatTableDataSource<OrderInterface>(this.tableRowData);// Sets the data source for the MatTable
+          this.orderData.length = this.tableRowData.length; // Sets the total length for pagination
+          this.orderData.dataSource.paginator = this.paginator; // Update the paginator reference
+          this.orderData.dataSource.sort = this.sort;// Assigns the MatSort directive to the data source
         } else {
           this.displayedColumns = [];
-          this.tableObj.dataSource = new MatTableDataSource<OrderInterface>([]);// Sets an empty data source
-          this.tableObj.length = 0;
+          this.orderData.dataSource = new MatTableDataSource<OrderInterface>([]);// Sets an empty data source
+          this.orderData.length = 0;
         }
         this.loading = false;// Data loading is complete
       },
-      error: (err) => {
-        this.tableObj.dataSource = new MatTableDataSource<OrderInterface>([]);// Sets an empty data source
-        this.tableObj.length = 0;
+      error: (err: { error: { data: any, message: string } }) => {
+        this.orderData.dataSource = new MatTableDataSource<OrderInterface>([]);// Sets an empty data source
+        this.orderData.length = 0;
         this.loading = false;// Data loading is complete
         let mergedString = "";
         if (err.error.data) {
@@ -76,7 +75,7 @@ export class OrderComponent implements OnInit {
   // filter data from table
   searchData(eventData: string) {
     // Filter the data based on search query
-    this.tableObj.dataSource.filter = eventData.trim().toLowerCase();
+    this.orderData.dataSource.filter = eventData.trim().toLowerCase();
   }
 
   // Opens the edit order dialog
@@ -121,7 +120,7 @@ export class OrderComponent implements OnInit {
               this.getTableData();// Refreshes the table data after deleting the order
             }
           },
-          error: (err) => {
+          error: (err: { error: { data: any, message: string } }) => {
             let mergedString = "";
             if (err.error.data) {
               const values = Object.values(err.error.data);
@@ -138,7 +137,7 @@ export class OrderComponent implements OnInit {
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
-    const numRows = this.tableObj.dataSource.data.length;
+    const numRows = this.orderData.dataSource.data.length;
     return numSelected === numRows;
   }
 
@@ -146,7 +145,7 @@ export class OrderComponent implements OnInit {
   masterToggle() {
     this.isAllSelected() ?
       this.selection.clear() :
-      this.tableObj.dataSource.data.forEach(row => this.selection.select(row));
+      this.orderData.dataSource.data.forEach(row => this.selection.select(row));
   }
   // Method to delete selected orders
   deleteSelectedOrders() {
@@ -160,7 +159,7 @@ export class OrderComponent implements OnInit {
       confirmButtonText: 'Yes, delete them!'
     }).then((result) => {
       if (result.isConfirmed) {
-        const selectedIds = this.selection.selected.map(order => order.id);
+        const selectedIds: number[] = this.selection.selected.map(order => order.id).filter(id => id !== undefined) as number[];
         // Calls the API service to delete the selected orders
         this.apiData.deleteOrder('orders', selectedIds).subscribe({
           next: (resonse: any) => {
@@ -170,7 +169,7 @@ export class OrderComponent implements OnInit {
               this.selection.clear();// Clear the selected orders array
             }
           },
-          error: (err) => {
+          error: (err: { error: { data: any, message: string } }) => {
             let mergedString = "";
             if (err.error.data) {
               const values = Object.values(err.error.data);
@@ -185,9 +184,9 @@ export class OrderComponent implements OnInit {
     })
   }
   // Handles the page change event
-  onPageChange(event: any) {
-    this.tableObj.pageIndex = event.pageIndex;
-    this.tableObj.pageSize = event.pageSize;
+  onPageChange(event: { pageIndex: number, pageSize: number }) {
+    this.orderData.pageIndex = event.pageIndex;
+    this.orderData.pageSize = event.pageSize;
   }
 }
 

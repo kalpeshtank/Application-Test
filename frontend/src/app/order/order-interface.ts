@@ -6,4 +6,5 @@ export interface OrderInterface {
     qty: number;
     state: string;
     zip: number;
+    type?: string
 }

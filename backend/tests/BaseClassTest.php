@@ -1,9 +1,6 @@
 <?php
 
 use PHPUnit\Framework\TestCase;
-use Src\BaseClass;
-use Src\DataProvider;
-use Src\OrderItems;
 
 class BaseClassTest extends TestCase {
 
@@ -78,13 +75,26 @@ class BaseClassTest extends TestCase {
         rewind($stream);
 
         // Set the input stream to the mock data
-        stream_wrapper_register('php-input', DummyStreamWrapper::class);
+        stream_wrapper_register('protocol', new Src\BaseClass());
         DummyStreamWrapper::$stream = $stream;
 
         // Set the default input stream to the mock wrapper
         ini_set('default_socket_timeout', -1);
         ini_set('default_mimetype', 'application/octet-stream');
         ini_set('default_wrapper', 'php-input');
+    }
+
+    public function testSetHeaders() {
+        $expectedHeaders = [
+            'Content-Type: application/json',
+            'Cache-Control: no-store, no-cache, must-revalidate',
+            'Pragma: no-cache'
+        ];
+        $baseClass = new Src\BaseClass();
+        // Capture the headers sent during the execution of setHeaders
+        $capturedHeaders = [];
+        $baseClass->setHeaders();
+        $this->assertEquals($expectedHeaders, $capturedHeaders);
     }
 
 }

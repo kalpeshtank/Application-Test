@@ -3,6 +3,7 @@ import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { ApiService } from 'src/app/api.service';
 import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import Swal from 'sweetalert2'
+import { OrderInterface } from '../order-interface';
 @Component({
   selector: 'app-add-edit-popup',
   templateUrl: './add-edit-popup.component.html',
@@ -11,16 +12,15 @@ import Swal from 'sweetalert2'
 export class AddEditPopupComponent implements OnInit {
   orderDataForm: FormGroup; // Form group for the order data
   id: string = ''; // ID of the order
-  modelData: any; // Data passed to the dialog component
+  modelData: OrderInterface; // Data passed to the dialog component
   title: string = "Create order"; // Title of the dialog
   loading: boolean = false; // Indicates if data is being loaded
   constructor(
-    @Inject(MAT_DIALOG_DATA) public data: any,
+    @Inject(MAT_DIALOG_DATA) public orderItem: any,
     private apiData: ApiService,
     private formBuilder: FormBuilder,
     public dialogRef: MatDialogRef<AddEditPopupComponent>
   ) {
-
     // Initialize the form using the form builder
     this.orderDataForm = this.formBuilder.group({
       name: ['', [Validators.required, Validators.pattern('^[a-zA-Z ]+$')]],
@@ -30,13 +30,13 @@ export class AddEditPopupComponent implements OnInit {
       qty: ['', [Validators.required, Validators.pattern('^[0-9]+$')]],
       item: ['', [Validators.required, Validators.pattern('^[a-zA-Z0-9]+$')]]
     });
-    this.modelData = data;
+    this.modelData = orderItem;
     this.title = this.modelData.type == 'edit' ? 'Edit order' : 'Create order';
-    if (data.data) {
-      this.id = data.data.id;
+    if (orderItem.data) {
+      this.id = orderItem.data.id;
       this.orderDataForm.patchValue({
-        name: data.data.name, state: data.data.state, zip: data.data.zip,
-        amount: data.data.amount, qty: data.data.qty, item: data.data.item,
+        name: orderItem.data.name, state: orderItem.data.state, zip: orderItem.data.zip,
+        amount: orderItem.data.amount, qty: orderItem.data.qty, item: orderItem.data.item,
       });
     }
   }
