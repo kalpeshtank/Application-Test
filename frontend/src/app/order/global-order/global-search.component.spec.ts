@@ -1,5 +1,4 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-
 import { GlobalSearchComponent } from './global-search.component';
 
 describe('GlobalSearchComponent', () => {
@@ -8,9 +7,8 @@ describe('GlobalSearchComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ GlobalSearchComponent ]
-    })
-    .compileComponents();
+      declarations: [GlobalSearchComponent]
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -19,7 +17,18 @@ describe('GlobalSearchComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create the component', () => {
     expect(component).toBeTruthy();
   });
+
+  it('should emit search data event when calling getTableData', () => {
+    const searchData = 'example search';
+    spyOn(component.searchDataEvent, 'emit');
+
+    component.searchText = searchData;
+    component.getTableData();
+
+    expect(component.searchDataEvent.emit).toHaveBeenCalledWith(searchData);
+  });
+  
 });

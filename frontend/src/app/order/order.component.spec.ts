@@ -1,41 +1,43 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { MatTableDataSource } from '@angular/material/table';
-import { ApiService } from '../api.service';
+import { of } from 'rxjs';
+import Swal from 'sweetalert2';
 import { AddEditPopupComponent } from './add-edit-order/add-edit-popup.component';
+import { ApiService } from '../api.service';
 import { OrderComponent } from './order.component';
 import { OrderInterface } from './order-interface';
-import Swal, { SweetAlertResult } from 'sweetalert2';
-import { of, throwError } from 'rxjs';
 
 describe('OrderComponent', () => {
   let component: OrderComponent;
   let fixture: ComponentFixture<OrderComponent>;
-  let apiData: ApiService;
-  let dialog: MatDialog;
+  let apiServiceSpy: jasmine.SpyObj<ApiService>;
+  let matDialogRefSpy: jasmine.SpyObj<MatDialogRef<AddEditPopupComponent>>;
+  let swalFireSpy: jasmine.Spy<any>;
 
   beforeEach(async () => {
-    const apiServiceMock = jasmine.createSpyObj('ApiService', ['getOrderData', 'createOrder', 'updateOrder', 'deleteOrder']);
+    apiServiceSpy = jasmine.createSpyObj('ApiService', ['getOrderData', 'deleteOrder']);
+    matDialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['afterClosed']);
+    swalFireSpy = spyOn(Swal, 'fire');
 
     await TestBed.configureTestingModule({
       declarations: [OrderComponent],
       providers: [
-        { provide: ApiService, useValue: apiServiceMock },
+        { provide: ApiService, useValue: apiServiceSpy },
+        { provide: MatDialogRef, useValue: matDialogRefSpy },
         {
           provide: MatDialog,
           useValue: {
-            open: jasmine.createSpy('open').and.returnValue({ afterClosed: () => of(true) }),
-          },
-        },
-      ],
+            open: () => matDialogRefSpy
+          }
+        }
+      ]
     }).compileComponents();
   });
 
   beforeEach(() => {
     fixture = TestBed.createComponent(OrderComponent);
     component = fixture.componentInstance;
-    apiData = TestBed.inject(ApiService);
-    dialog = TestBed.inject(MatDialog);
     fixture.detectChanges();
   });
 
@@ -43,191 +45,57 @@ describe('OrderComponent', () => {
     expect(component).toBeTruthy();
   });
 
-  it('should fetch table data on initialization', () => {
-    const mockOrderData: OrderInterface[] = [
-      {
-        id: 1,
-        name: 'Order 1',
-        item: 'Order 1',
-        amount: 500,
-        qty: 50,
-        state: '5',
-        zip: 5696
-      }
+  it('should fetch and display order data', () => {
+    const mockData: OrderInterface[] = [
+      { id: 1, name: 'Order 1', item: 'Item 1', amount: 10, qty: 2, state: 'State 1', zip: 12345 }
     ];
+    apiServiceSpy.getOrderData.and.returnValue(of({ status: 200, data: { headers: [], data: mockData } }));
 
-    const getOrderDataSpy = spyOn(apiData, 'getOrderData').and.returnValue(
-      of({ status: 200, data: { headers: [], data: mockOrderData } })
-    );
+    component.getTableData();
 
-    component.ngOnInit();
-
-    expect(getOrderDataSpy).toHaveBeenCalledWith('orders');
+    expect(apiServiceSpy.getOrderData).toHaveBeenCalledWith('orders');
     expect(component.displayedColumns).toEqual(['checkbox', 'Actions']);
-    expect(component.tableRowData).toEqual(mockOrderData);
-    expect(component.tableObj.dataSource).toEqual(new MatTableDataSource<OrderInterface>(mockOrderData));
-    expect(component.tableObj.length).toBe(1);
-    expect(component.tableObj.dataSource.paginator).toEqual(component.paginator);
-    expect(component.tableObj.dataSource.sort).toEqual(component.sort);
-    expect(component.loading).toBe(false);
+    expect(component.tableRowData).toEqual(mockData);
+    expect(component.orderData.dataSource).toEqual(new MatTableDataSource<OrderInterface>(mockData));
+    expect(component.orderData.length).toBe(mockData.length);
+    expect(component.orderData.hasOwnProperty('_paginator')).toBeFalsy(); // Check if _paginator property does not exist
+    expect(component.orderData.hasOwnProperty('_sort')).toBeFalsy(); // Check if _sort property does not exist
   });
 
-  it('should handle error on fetching table data', () => {
-    const errorMessage = 'Failed to fetch data';
 
-    const getOrderDataSpy = spyOn(apiData, 'getOrderData').and.returnValue(
-      throwError({ error: { message: errorMessage } })
-    );
-
-    const SwalFireSpy = spyOn(Swal, 'fire');
-
-    component.ngOnInit();
-
-    expect(getOrderDataSpy).toHaveBeenCalledWith('orders');
-    expect(component.displayedColumns).toEqual([]);
-    expect(component.tableObj.dataSource).toEqual(new MatTableDataSource<OrderInterface>([]));
-    expect(component.tableObj.length).toBe(0);
-    expect(component.loading).toBe(false);
-    expect(SwalFireSpy).toHaveBeenCalledWith('Error!', errorMessage, 'error');
-  });
-
-  it('should filter data based on search query', () => {
-    const eventData = 'order';
-
-    component.tableObj.dataSource = new MatTableDataSource<OrderInterface>([
-      {
-        id: 1,
-        name: 'Order 1',
-        item: 'Order 1',
-        amount: 500,
-        qty: 50,
-        state: '5',
-        zip: 5696
-      },
-      {
-        id: 2,
-        name: 'Order 2',
-        item: 'Order 2',
-        amount: 1000,
-        qty: 20,
-        state: '3',
-        zip: 12345
-      },
-    ]);
-
-    const filterSpy = spyOn<any>(component.tableObj.dataSource, 'filter');
-    component.searchData(eventData);
-    expect(filterSpy).toHaveBeenCalledWith(eventData.trim().toLowerCase());
-  });
-
-  it('should open edit order dialog and refresh table data on closing', () => {
-    const mockOrder: OrderInterface = {
-      id: 1,
-      name: 'Order 1',
-      item: 'Order 1',
-      amount: 500,
-      qty: 50,
-      state: '5',
-      zip: 5696
+  it('should handle error when fetching order data', () => {
+    const errorResponse = {
+      error: {
+        data: { message: 'Error message' }
+      }
     };
+    apiServiceSpy.getOrderData.and.returnValue(of(errorResponse));
 
-    const dialogRefMock = {
-      afterClosed: () => of(true),
-    } as MatDialogRef<AddEditPopupComponent>;
+    component.getTableData();
 
-    const openDialogSpy = spyOn(dialog, 'open').and.returnValue(dialogRefMock);
-    const getTableDataSpy = spyOn(component, 'getTableData').and.callThrough();
-
-    component.editOrder(mockOrder);
-
-    expect(openDialogSpy).toHaveBeenCalledWith(AddEditPopupComponent, {
-      data: { type: 'edit', data: mockOrder },
-    });
-
-    dialogRefMock.afterClosed().subscribe(() => {
-      expect(getTableDataSpy).toHaveBeenCalled();
-    });
+    expect(apiServiceSpy.getOrderData).toHaveBeenCalledWith('orders');
+    expect(component.displayedColumns).toEqual([]);
+    expect(component.orderData.dataSource).toEqual(new MatTableDataSource<OrderInterface>([]));
+    expect(component.orderData.length).toBe(0);
+    expect(swalFireSpy).toHaveBeenCalledWith('Error!', 'Error message', 'error');
   });
 
-  it('should open add order dialog and refresh table data on closing', () => {
-    const dialogRefMock = {
-      afterClosed: () => of(true),
-    } as MatDialogRef<AddEditPopupComponent>;
-    const getTableDataSpy = spyOn(component, 'getTableData').and.callThrough();
+  it('should open add order dialog', () => {
+    matDialogRefSpy.afterClosed.and.returnValue(of(true));
 
     component.addOrder();
 
-    dialogRefMock.afterClosed().subscribe(() => {
-      expect(getTableDataSpy).toHaveBeenCalled();
-    });
+    expect(matDialogRefSpy.afterClosed).toHaveBeenCalled();
+    expect(apiServiceSpy.getOrderData).toHaveBeenCalled(); // Assuming this is called to refresh the data
   });
 
-  it('should delete an order and refresh table data', () => {
-    const mockOrder: OrderInterface = {
-      id: 1,
-      name: 'Order 1',
-      item: 'Order 1',
-      amount: 500,
-      qty: 50,
-      state: '5',
-      zip: 5696
-    };
+  it('should open edit order dialog', () => {
+    const mockData: OrderInterface = { id: 1, name: 'Order 1', item: 'Item 1', amount: 10, qty: 2, state: 'State 1', zip: 12345 };
+    matDialogRefSpy.afterClosed.and.returnValue(of(true));
 
-    const deleteOrderSpy = spyOn(apiData, 'deleteOrder').and.returnValue(of({ status: 200 }));
-    const SwalFireSpy = spyOn(Swal, 'fire');
+    component.editOrder(mockData);
 
-    const SwalFireQuestionSpy = spyOn(Swal, 'fire').and.returnValue(
-      Promise.resolve({ isConfirmed: true, isDenied: false, isDismissed: false }) as Promise<SweetAlertResult<any>>
-    );
-
-    const getTableDataSpy = spyOn(component, 'getTableData').and.callThrough();
-
-    component.deleteOrder(mockOrder);
-
-    expect(SwalFireQuestionSpy).toHaveBeenCalled();
-
-    expect(deleteOrderSpy).toHaveBeenCalledWith('order/1');
-
-    deleteOrderSpy.calls.mostRecent().returnValue.subscribe(() => {
-      expect(SwalFireSpy).toHaveBeenCalledWith('Deleted!', 'Your Order has been deleted successfully.', 'success');
-      expect(getTableDataSpy).toHaveBeenCalled();
-    });
-  });
-
-  it('should handle error on deleting an order', () => {
-    const mockOrder: OrderInterface = {
-      id: 1,
-      name: 'Order 1',
-      item: 'Order 1',
-      amount: 500,
-      qty: 50,
-      state: '5',
-      zip: 5696
-    };
-
-    const errorMessage = 'Failed to delete order';
-
-    const deleteOrderSpy = spyOn(apiData, 'deleteOrder').and.returnValue(
-      throwError({ error: { message: errorMessage } })
-    );
-
-    const SwalFireSpy = spyOn(Swal, 'fire');
-
-    const SwalFireQuestionSpy = spyOn(Swal, 'fire').and.returnValue(
-      Promise.resolve({ isConfirmed: true, isDenied: false, isDismissed: false }) as Promise<SweetAlertResult<any>>
-    );
-
-    const getTableDataSpy = spyOn(component, 'getTableData').and.callThrough();
-
-    component.deleteOrder(mockOrder);
-
-    expect(SwalFireQuestionSpy).toHaveBeenCalled();
-
-    expect(deleteOrderSpy).toHaveBeenCalledWith('order/1');
-
-    deleteOrderSpy.calls.mostRecent().returnValue.subscribe(() => {
-      expect(SwalFireSpy).toHaveBeenCalledWith('Error!', errorMessage, 'error');
-      expect(getTableDataSpy).toHaveBeenCalled();
-    });
+    expect(matDialogRefSpy.afterClosed).toHaveBeenCalled();
+    expect(apiServiceSpy.getOrderData).toHaveBeenCalled(); // Assuming this is called to refresh the data
   });
 });

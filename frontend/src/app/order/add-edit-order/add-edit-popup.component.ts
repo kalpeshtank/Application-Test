@@ -70,6 +70,7 @@ export class AddEditPopupComponent implements OnInit {
       }
     });
   }
+
   // Update an existing order record
   updateRecord() {
     this.loading = true;
@@ -82,7 +83,7 @@ export class AddEditPopupComponent implements OnInit {
         this.loading = false;
       },
       error: (err) => {
-        let mergedString = "";
+        let mergedString = '';
         if (err.error.data) {
           const values = Object.values(err.error.data);
           mergedString = values.join(', ');

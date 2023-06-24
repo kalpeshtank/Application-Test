@@ -1,170 +1,123 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { FormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { of, throwError } from 'rxjs';
+import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { ApiService } from 'src/app/api.service';
 import { AddEditPopupComponent } from './add-edit-popup.component';
+import { of, throwError } from 'rxjs';
 import Swal from 'sweetalert2';
 
 describe('AddEditPopupComponent', () => {
   let component: AddEditPopupComponent;
   let fixture: ComponentFixture<AddEditPopupComponent>;
-  let apiService: ApiService;
-  let matDialogRef: MatDialogRef<AddEditPopupComponent>;
+  let mockDialogRef: jasmine.SpyObj<MatDialogRef<AddEditPopupComponent>>;
+  let mockApiService: jasmine.SpyObj<ApiService>;
+  const orderItem: any = { data: { id: '1', name: 'Test', state: 'State', zip: '12345', amount: '10.5', qty: '1', item: 'Item' }, type: 'edit' };
 
   beforeEach(async () => {
+    const dialogRefSpy = jasmine.createSpyObj('MatDialogRef', ['close']);
+    const apiServiceSpy = jasmine.createSpyObj('ApiService', ['createOrder', 'updateOrder']);
+
     await TestBed.configureTestingModule({
       declarations: [AddEditPopupComponent],
-      imports: [ReactiveFormsModule],
+      imports: [FormsModule, ReactiveFormsModule],
       providers: [
+        { provide: MAT_DIALOG_DATA, useValue: orderItem },
+        { provide: MatDialogRef, useValue: dialogRefSpy },
+        { provide: ApiService, useValue: apiServiceSpy },
         FormBuilder,
-        {
-          provide: MAT_DIALOG_DATA,
-          useValue: {}
-        },
-        {
-          provide: MatDialogRef,
-          useValue: jasmine.createSpyObj('MatDialogRef', ['close'])
-        },
-        {
-          provide: ApiService,
-          useValue: jasmine.createSpyObj('ApiService', ['createOrder', 'updateOrder'])
-        }
-      ]
+      ],
     }).compileComponents();
-  });
 
-  beforeEach(() => {
+    mockDialogRef = TestBed.inject(MatDialogRef) as jasmine.SpyObj<MatDialogRef<AddEditPopupComponent>>;
+    mockApiService = TestBed.inject(ApiService) as jasmine.SpyObj<ApiService>;
     fixture = TestBed.createComponent(AddEditPopupComponent);
     component = fixture.componentInstance;
-    apiService = TestBed.inject(ApiService);
-    matDialogRef = TestBed.inject(MatDialogRef);
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create the component', () => {
     expect(component).toBeTruthy();
   });
 
-  describe('addRecord', () => {
-    it('should create a new order record', () => {
-      const mockFormValue = {
-        name: 'Order 1',
-        state: 'State 1',
-        zip: '12345',
-        amount: 500,
-        qty: 50,
-        item: 'Item 1'
-      };
-
-      const mockApiResponse = {
-        status: 200,
-        message: 'Order created successfully'
-      };
-
-      spyOn(Swal, 'fire').and.stub();
-      spyOn(apiService, 'createOrder').and.returnValue(of(mockApiResponse));
-
-      component.orderDataForm.setValue(mockFormValue);
-      component.addRecord();
-
-      expect(apiService.createOrder).toHaveBeenCalledWith('order', mockFormValue);
-      expect(Swal.fire).toHaveBeenCalledWith('Created!', mockApiResponse.message, 'success');
-      expect(matDialogRef.close).toHaveBeenCalledWith(true);
-      expect(component.loading).toBe(false);
-    });
-
-    it('should handle error when creating a new order record', () => {
-      const mockFormValue = {
-        name: 'Order 1',
-        state: 'State 1',
-        zip: '12345',
-        amount: 500,
-        qty: 50,
-        item: 'Item 1'
-      };
-
-      const mockError = {
-        error: {
-          data: {
-            field1: 'Error message 1',
-            field2: 'Error message 2'
-          }
-        }
-      };
-
-      spyOn(Swal, 'fire').and.stub();
-      spyOn(apiService, 'createOrder').and.returnValue(throwError(mockError));
-
-      component.orderDataForm.setValue(mockFormValue);
-      component.addRecord();
-
-      expect(apiService.createOrder).toHaveBeenCalledWith('order', mockFormValue);
-      expect(Swal.fire).toHaveBeenCalledWith('Error!', 'Error message 1, Error message 2', 'error');
-      expect(matDialogRef.close).not.toHaveBeenCalled();
-      expect(component.loading).toBe(false);
+  it('should initialize the form correctly for editing an order', () => {
+    expect(component.title).toBe('Edit order');
+    expect(component.orderDataForm.value).toEqual({
+      name: orderItem.data.name,
+      state: orderItem.data.state,
+      zip: orderItem.data.zip,
+      amount: orderItem.data.amount,
+      qty: orderItem.data.qty,
+      item: orderItem.data.item,
     });
   });
 
-  describe('updateRecord', () => {
-    it('should update an existing order record', () => {
-      const mockFormValue = {
-        name: 'Order 1',
-        state: 'State 1',
-        zip: '12345',
-        amount: 500,
-        qty: 50,
-        item: 'Item 1'
-      };
+  it('should initialize the form correctly for creating an order', () => {
+    const newItemOrderItem: any = { type: 'create' };
+    TestBed.overrideProvider(MAT_DIALOG_DATA, { useValue: newItemOrderItem });
 
-      const mockApiResponse = {
-        status: 200,
-        message: 'Order updated successfully'
-      };
+    fixture = TestBed.createComponent(AddEditPopupComponent);
+    component = fixture.componentInstance;
+    fixture.detectChanges();
 
-      spyOn(Swal, 'fire').and.stub();
-      spyOn(apiService, 'updateOrder').and.returnValue(of(mockApiResponse));
-
-      component.orderDataForm.setValue(mockFormValue);
-      component.id = '1'; // Set the ID for an existing order
-      component.updateRecord();
-
-      expect(apiService.updateOrder).toHaveBeenCalledWith('order/1', mockFormValue);
-      expect(Swal.fire).toHaveBeenCalledWith('Updated!', mockApiResponse.message, 'success');
-      expect(matDialogRef.close).toHaveBeenCalledWith(true);
-      expect(component.loading).toBe(false);
-    });
-
-    it('should handle error when updating an existing order record', () => {
-      const mockFormValue = {
-        name: 'Order 1',
-        state: 'State 1',
-        zip: '12345',
-        amount: 500,
-        qty: 50,
-        item: 'Item 1'
-      };
-
-      const mockError = {
-        error: {
-          data: {
-            field1: 'Error message 1',
-            field2: 'Error message 2'
-          }
-        }
-      };
-
-      spyOn(Swal, 'fire').and.stub();
-      spyOn(apiService, 'updateOrder').and.returnValue(throwError(mockError));
-
-      component.orderDataForm.setValue(mockFormValue);
-      component.id = '1'; // Set the ID for an existing order
-      component.updateRecord();
-
-      expect(apiService.updateOrder).toHaveBeenCalledWith('order/1', mockFormValue);
-      expect(Swal.fire).toHaveBeenCalledWith('Error!', 'Error message 1, Error message 2', 'error');
-      expect(matDialogRef.close).not.toHaveBeenCalled();
-      expect(component.loading).toBe(false);
+    expect(component.title).toBe('Create order');
+    expect(component.orderDataForm.value).toEqual({
+      name: '',
+      state: '',
+      zip: '',
+      amount: '',
+      qty: '',
+      item: '',
     });
   });
+
+  it('should add a new order record', () => {
+    mockApiService.createOrder.and.returnValue(of({ status: 200, message: 'Order created' }));
+
+    component.addRecord();
+
+    expect(component.loading).toBe(false);
+    expect(mockApiService.createOrder).toHaveBeenCalledWith('order', component.orderDataForm.value);
+    expect(mockDialogRef.close).toHaveBeenCalledWith(true);
+    expect(component.loading).toBe(false);
+  });
+
+  it('should handle error when adding a new order record', () => {
+    const errorMessage = 'An error occurred';
+    const errorResponse = { error: { message: errorMessage } };
+    mockApiService.createOrder.and.returnValue(throwError(errorResponse));
+
+    component.addRecord();
+
+    expect(component.loading).toBe(true);
+    expect(mockApiService.createOrder).toHaveBeenCalledWith('order', component.orderDataForm.value);
+    expect(mockDialogRef.close).not.toHaveBeenCalled();
+    expect(component.loading).toBe(false);
+    expect(Swal.fire).toHaveBeenCalledWith('Error!', errorMessage, 'error');
+  });
+
+  it('should update an existing order record', () => {
+    mockApiService.updateOrder.and.returnValue(of({ status: 200, message: 'Order updated' }));
+
+    component.updateRecord();
+
+    expect(component.loading).toBe(false);
+    expect(mockApiService.updateOrder).toHaveBeenCalledWith('order/' + component.id, component.orderDataForm.value);
+    expect(mockDialogRef.close).toHaveBeenCalledWith(true);
+    expect(component.loading).toBe(false);
+  });
+
+  it('should handle error when updating an existing order record', () => {
+    const errorMessage = 'An error occurred';
+    const errorResponse = { error: { message: errorMessage } };
+    spyOn(mockApiService, 'updateOrder').and.returnValue(throwError(errorResponse));
+
+    component.updateRecord();
+
+    expect(component.loading).toBe(false);
+    expect(mockApiService.updateOrder).toHaveBeenCalledWith('order/' + component.id, component.orderDataForm.value);
+    expect(mockDialogRef.close).not.toHaveBeenCalled();
+    expect(component.loading).toBe(false);
+    expect(Swal.fire).toHaveBeenCalledWith('Error!', errorMessage, 'error');
+  });
+
 });
