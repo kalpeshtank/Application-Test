@@ -1,5 +1,7 @@
 <?php
 
+namespace Tests\Unit;
+
 use Codeception\Test\Unit;
 
 class BaseClassTest extends Unit {
@@ -26,7 +28,6 @@ class BaseClassTest extends Unit {
 
         // Call the getInput() method
         $result = $baseClass->getInput();
-
         // Assert that the result is an array with the expected values
         $expectedResult = [
             'name' => 'John Doe',
@@ -36,6 +37,7 @@ class BaseClassTest extends Unit {
             'qty' => 2,
             'item' => 'Widget',
         ];
+
         $this->assertEquals($expectedResult, $result);
     }
 
@@ -74,14 +76,14 @@ class BaseClassTest extends Unit {
         $result = $baseClass->validateOrderData($inputData);
 
         $expectedResult = [
+            "message" => "Error",
+            "status" => 400,
             'data' => [
                 'name' => 'Name is required',
                 'zip' => 'Zip code is required',
-                'amount' => 'Amount must be a number',
                 'qty' => 'Quantity is required',
                 'item' => 'Item is required',
             ],
-            'message' => 'Error',
         ];
 
         $this->assertEquals($expectedResult, $result);

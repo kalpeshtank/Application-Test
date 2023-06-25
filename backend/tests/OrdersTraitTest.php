@@ -1,5 +1,7 @@
 <?php
 
+namespace Tests\Unit;
+
 use Src\Traits\OrdersTrait;
 
 class OrdersTraitTest extends \Codeception\Test\Unit {

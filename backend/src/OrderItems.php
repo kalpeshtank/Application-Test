@@ -14,7 +14,7 @@ class OrderItems extends BaseClass implements OrdersInterface {
     public function __construct($requestMethod, $id) {
         $this->requestMethod = $requestMethod;
         $this->id = $id;
-        $this->dataProvider = new DataProvider();
+        $this->dataProvider = new DataProvider("../data/data.csv");
     }
 
     /**

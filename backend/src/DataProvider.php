@@ -9,13 +9,14 @@ class DataProvider extends BaseClass implements OrdersInterface {
 
     use OrdersTrait;
 
-    protected $file = "../data/data.csv";
+    protected $dataFile;
 
-    public function __construct() {
+    public function __construct($filePath) {
+        $this->dataFile = $filePath;
         // Check if the file exists
-        if (!file_exists($this->file)) {
+        if (!file_exists($this->dataFile)) {
             // Create a new file with the same name
-            $newFile = fopen($this->file, 'w');
+            $newFile = fopen($this->dataFile, 'w');
             // Write headers to the file
             $headers = ['id', 'name', 'state', 'zip', 'amount', 'qty', 'item'];
             fputcsv($newFile, $headers);
