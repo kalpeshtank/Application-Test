@@ -1,204 +1,191 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
 use Src\Traits\OrdersTrait;
 
-class OrdersTraitTest extends TestCase {
+class OrdersTraitTest extends \Codeception\Test\Unit {
 
-    use OrdersTrait;
+    protected $ordersTrait;
+    protected $mockFile;
 
-    protected function setUp(): void {
-        
+    protected function _before() {
+        $this->ordersTrait = $this->getMockForTrait(OrdersTrait::class);
+        $this->mockFile = fopen('php://temp', 'w+');
+        fwrite($this->mockFile, "id,name,state,zip,amount,qty,item\n");
+        fwrite($this->mockFile, "1,John,Doe,12345,100,2,Item 1\n");
+        fwrite($this->mockFile, "2,Jane,Smith,67890,200,3,Item 2\n");
+        rewind($this->mockFile);
     }
 
-    public function testReadCsvData() {
-        // Mock the file handle
-        $file = fopen($this->file, 'r');
-        $headers = ['id', 'name', 'state', 'zip', 'amount', 'qty', 'item'];
-        $data = [
-            ['1', 'John Doe', 'CA', '12345', '100', '2', 'Product A'],
-            ['2', 'Jane Smith', 'NY', '67890', '200', '3', 'Product B'],
-        ];
-        $expectedResponse = ['headers' => $headers, 'data' => $data];
-
-        // Mock the fgetcsv function
-        $this->mockFunction('fgetcsv', $data, $file, true);
-
-        $result = $this->readCsvData($file);
-
-        $this->assertEquals($expectedResponse, $result);
-        fclose($file);
+    protected function _after() {
+        fclose($this->mockFile);
     }
 
     public function testReadCsvDataById() {
-        // Mock the file handle
-        $file = fopen($this->file, 'r');
-        $id = 2;
-        $data = ['2', 'Jane Smith', 'NY', '67890', '200', '3', 'Product B'];
-        $expectedResponse = [
-            'id' => '2',
-            'name' => 'Jane Smith',
-            'state' => 'NY',
-            'zip' => '67890',
-            'amount' => '200',
-            'qty' => '3',
-            'item' => 'Product B',
+        // Create a mock file with sample data
+        $file = fopen('php://temp', 'w+');
+        fwrite($file, "id,name,state,zip,amount,qty,item\n");
+        fwrite($file, "1,John,Doe,12345,100,2,Item 1\n");
+        fwrite($file, "2,Jane,Smith,67890,200,3,Item 2\n");
+        rewind($file);
+
+        // Call the function being tested
+        $result = $this->ordersTrait->readCsvDataById($file, '1');
+
+        // Assert the expected output
+        $expectedData = [
+            "id" => "1",
+            "name" => "John",
+            "state" => "Doe",
+            "zip" => "12345",
+            "amount" => "100",
+            "qty" => "2",
+            "item" => "Item 1"
         ];
 
-        // Mock the fgetcsv function
-        $this->mockFunction('fgetcsv', $data, $file, true);
+        $this->assertEquals($expectedData, $result);
 
-        $result = $this->readCsvDataById($file, $id);
+        // Close the mock file
+        fclose($file);
+    }
 
-        $this->assertEquals($expectedResponse, $result);
+    public function testReadCsvData() {
+        // Create a mock file with sample data
+        $file = fopen('php://temp', 'w+');
+        fwrite($file, "id,name,state,zip,amount,qty,item\n");
+        fwrite($file, "1,John,Doe,12345,100,2,Item 1\n");
+        fwrite($file, "2,Jane,Smith,67890,200,3,Item 2\n");
+        rewind($file);
+
+        // Call the function being tested
+        $result = $this->ordersTrait->readCsvData($file);
+
+        // Assert the expected output
+        $expectedHeaders = ['id', 'name', 'state', 'zip', 'amount', 'qty', 'item'];
+        $expectedData = [
+            [
+                'id' => '1',
+                'name' => 'John',
+                'state' => 'Doe',
+                'zip' => '12345',
+                'amount' => '100',
+                'qty' => '2',
+                'item' => 'Item 1',
+            ],
+            [
+                'id' => '2',
+                'name' => 'Jane',
+                'state' => 'Smith',
+                'zip' => '67890',
+                'amount' => '200',
+                'qty' => '3',
+                'item' => 'Item 2',
+            ],
+        ];
+
+        $this->assertEquals(['headers' => $expectedHeaders, 'data' => $expectedData], $result);
+
+        // Close the mock file
         fclose($file);
     }
 
     public function testCreateCsvData() {
-        // Mock the file handle
-        $file = fopen($this->file, 'r+');
         $data = [
-            'name' => 'John Doe',
-            'state' => 'CA',
-            'zip' => '12345',
-            'amount' => '100',
-            'qty' => '2',
-            'item' => 'Product A',
-        ];
-        $expectedResponse = [
-            'status' => 200,
-            'data' => [
-                'id' => '1',
-                'name' => 'John Doe',
-                'state' => 'CA',
-                'zip' => '12345',
-                'amount' => '100',
-                'qty' => '2',
-                'item' => 'Product A',
-            ],
-            'message' => 'OrderItems Created',
+            'name' => 'New Name',
+            'state' => 'New State',
+            'zip' => 'New Zip',
+            'amount' => 'New Amount',
+            'qty' => 'New Qty',
+            'item' => 'New Item',
         ];
 
-        // Mock the fputcsv function
-        $this->mockFunction('fputcsv', true, $file, true);
+        $expectedNewData = [
+            'id' => '3',
+            'name' => 'New Name',
+            'state' => 'New State',
+            'zip' => 'New Zip',
+            'amount' => 'New Amount',
+            'qty' => 'New Qty',
+            'item' => 'New Item',
+        ];
 
-        $result = $this->createCsvData($file, $data);
+        $result = $this->ordersTrait->createCsvData($this->mockFile, $data);
 
-        $this->assertEquals($expectedResponse, $result);
-        fclose($file);
+        $this->assertEquals(200, $result['status']);
+        $this->assertEquals($expectedNewData, $result['data']);
+        $this->assertEquals('OrderItems Created', $result['message']);
     }
 
     public function testUpdateCsvData() {
-        // Mock the file handle
-        $file = fopen($this->file, 'r+');
-        $id = 2;
-        $data = [
-            'name' => 'Jane Smith',
-            'state' => 'NY',
-            'zip' => '67890',
-            'amount' => '200',
-            'qty' => '3',
-            'item' => 'Product B',
-        ];
-        $expectedResponse = [
-            'status' => 200,
-            'data' => [],
-            'message' => 'OrderItems Updated!',
+        $inputData = [
+            'name' => 'Updated Name',
+            'state' => 'Updated State',
+            'zip' => 'Updated Zip',
+            'amount' => 'Updated Amount',
+            'qty' => 'Updated Qty',
+            'item' => 'Updated Item',
         ];
 
-        // Mock the fgetcsv function
-        $this->mockFunction('fgetcsv', ['2', 'Jane Smith', 'NY', '67890', '200', '3', 'Product B'], $file, true);
+        $id = '1';
 
-        // Mock the fseek function
-        $this->mockFunction('fseek', 0, $file, true);
+        $expectedUpdatedData = [
+            'id' => $id,
+            'name' => 'Updated Name',
+            'state' => 'Updated State',
+            'zip' => 'Updated Zip',
+            'amount' => 'Updated Amount',
+            'qty' => 'Updated Qty',
+            'item' => 'Updated Item',
+        ];
 
-        // Mock the ftruncate function
-        $this->mockFunction('ftruncate', true, $file, true);
+        $result = $this->ordersTrait->updateCsvData($this->mockFile, $inputData, $id);
 
-        // Mock the fputcsv function
-        $this->mockFunction('fputcsv', true, $file, true);
+        $this->assertEquals(200, $result['status']);
+        $this->assertEquals([], $result['data']);
+        $this->assertEquals('OrderItems Updated!', $result['message']);
 
-        $result = $this->updateCsvData($file, $data, $id);
+        // Read the updated record to verify the changes
+        rewind($this->mockFile);
+        $updatedRecord = $this->ordersTrait->readCsvDataById($this->mockFile, $id);
 
-        $this->assertEquals($expectedResponse, $result);
-        fclose($file);
+        $this->assertEquals($expectedUpdatedData, $updatedRecord);
     }
 
     public function testDeleteCsvData() {
-        // Mock the file handle
-        $file = fopen($this->file, 'r+');
-        $id = 2;
-        $expectedResponse = [
-            'status' => 200,
-            'data' => null,
-            'message' => 'OrderItem Deleted',
-        ];
+        $id = '1';
 
-        // Mock the fgetcsv function
-        $this->mockFunction('fgetcsv', ['2', 'Jane Smith', 'NY', '67890', '200', '3', 'Product B'], $file, true);
+        $result = $this->ordersTrait->deleteCsvData($this->mockFile, $id);
 
-        // Mock the fseek function
-        $this->mockFunction('fseek', 0, $file, true);
+        $this->assertEquals(200, $result['status']);
+        $this->assertEquals(null, $result['data']);
+        $this->assertEquals('OrderItem Deleted', $result['message']);
 
-        // Mock the ftruncate function
-        $this->mockFunction('ftruncate', true, $file, true);
+        // Read the file to verify the deletion
+        rewind($this->mockFile);
+        $data = [];
+        while (($record = fgetcsv($this->mockFile)) !== false) {
+            $data[] = $record;
+        }
 
-        // Mock the fputcsv function
-        $this->mockFunction('fputcsv', true, $file, true);
-
-        $result = $this->deleteCsvData($file, $id);
-
-        $this->assertEquals($expectedResponse, $result);
-        fclose($file);
+        $this->assertCount(1, $data); // Only the header row should remain
     }
 
     public function testDeleteMultipleCsvData() {
-        // Mock the file handle
-        $file = fopen($this->file, 'r+');
-        $ids = [2, 3];
-        $expectedResponse = [
-            'status' => 200,
-            'data' => [2, 3],
-            'message' => 'Records deleted successfully',
-        ];
+        $ids = ['1', '2'];
 
-        // Mock the fgetcsv function
-        $this->mockFunction('fgetcsv', ['2', 'Jane Smith', 'NY', '67890', '200', '3', 'Product B'], $file, true);
-        $this->mockFunction('fgetcsv', ['3', 'John Doe', 'CA', '12345', '100', '2', 'Product A'], $file, true);
-        $this->mockFunction('fgetcsv', false, $file, false); // Return false to indicate end of file
-        // Mock the fseek function
-        $this->mockFunction('fseek', 0, $file, true);
+        $result = $this->ordersTrait->deleteMultipleCsvData($this->mockFile, $ids);
 
-        // Mock the ftruncate function
-        $this->mockFunction('ftruncate', true, $file, true);
+        $this->assertEquals(200, $result['status']);
+        $this->assertEquals($ids, $result['data']);
+        $this->assertEquals('Records deleted successfully', $result['message']);
 
-        // Mock the fputcsv function
-        $this->mockFunction('fputcsv', true, $file, true);
-
-        $result = $this->deleteMultipleCsvData($file, $ids);
-
-        $this->assertEquals($expectedResponse, $result);
-        fclose($file);
-    }
-
-    protected function mockFunction($function, $returnValue, $context, $expectsClose = false) {
-        $mock = $this->getMockBuilder('stdClass')
-                ->setMethods([$function])
-                ->getMock();
-
-        $mock->expects($this->atLeastOnce())
-                ->method($function)
-                ->withConsecutive([$context], $this->returnValue($returnValue));
-
-        if ($expectsClose) {
-            $mock->expects($this->once())
-                    ->method('fclose')
-                    ->with($context);
+        // Read the file to verify the deletions
+        rewind($this->mockFile);
+        $data = [];
+        while (($record = fgetcsv($this->mockFile)) !== false) {
+            $data[] = $record;
         }
 
-        $this->setFunctionMock($function, $mock);
+        $this->assertCount(1, $data); // Only the header row should remain
     }
 
 }
-
-?>

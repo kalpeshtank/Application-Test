@@ -6,14 +6,15 @@ trait OrdersTrait {
 
     protected $file = "../data/data.csv";
 
-    /**Interface
+    /*     * Interface
      * Function to perform file operations based on the provided operation
      * @param type $operation
      * @param type $data
      * @param type $id
      * @return type
      */
-    protected function performFileOperation($operation, $data = null, $id = null) {
+
+    public function performFileOperation($operation, $data = null, $id = null) {
         $file = fopen($this->file, 'r+');
         flock($file, LOCK_EX);
         $result = null;
@@ -48,7 +49,7 @@ trait OrdersTrait {
      * @param type $file
      * @return array
      */
-    protected function readCsvData($file) {
+    public function readCsvData($file) {
         $orders = array();
         $headers = array();
         while (($row = fgetcsv($file)) !== false) {
@@ -72,7 +73,7 @@ trait OrdersTrait {
      * @param type $id
      * @return array
      */
-    protected function readCsvDataById($file, $id) {
+    public function readCsvDataById($file, $id) {
         $row_data = [];
         while (($row = fgetcsv($file)) !== false) {
             // Skip the header row
@@ -98,7 +99,7 @@ trait OrdersTrait {
      * @param type $data
      * @return type
      */
-    protected function createCsvData($file, $data) {
+    public function createCsvData($file, $data) {
         // Create a new array with the values of the new record
         $newData = array(
             "id" => $this->getId($file),
@@ -123,7 +124,7 @@ trait OrdersTrait {
      * @param type $id
      * @return type
      */
-    protected function updateCsvData($file, $input_data, $id) {
+    public function updateCsvData($file, $input_data, $id) {
         $isFoundRecord = false;
         $records = [];
         $header = fgetcsv($file); // Read header row
@@ -164,7 +165,7 @@ trait OrdersTrait {
      * @param type $file
      * @return number 
      */
-    protected function getId($file) {
+    public function getId($file) {
         $rows = [];
         $id = 0;
         // Read the CSV file to get the highest ID
@@ -188,7 +189,7 @@ trait OrdersTrait {
      * @param type $id
      * @return response
      */
-    protected function deleteCsvData($file, $id) {
+    public function deleteCsvData($file, $id) {
         $rows = [];
         while (($data = fgetcsv($file)) !== false) {
             if ($data[0] != $id) {
@@ -208,7 +209,7 @@ trait OrdersTrait {
      * @param array $ids
      * @return response
      */
-    protected function deleteMultipleCsvData($file, $ids) {
+    public function deleteMultipleCsvData($file, $ids) {
         $rows = [];
         $deletedIds = [];
         while (($data = fgetcsv($file)) !== false) {

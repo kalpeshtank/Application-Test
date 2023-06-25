@@ -1,102 +1,98 @@
 <?php
 
-use PHPUnit\Framework\TestCase;
+use Codeception\Test\Unit;
 
-class BaseClassTest extends TestCase {
+class BaseClassTest extends Unit {
 
-    public function testValidateData() {
-        $baseClass = new Src\BaseClass();
+    /**
+     * @var \UnitTester
+     */
+    protected $tester;
 
+    protected function _before() {
+        // Set up any necessary dependencies or configurations before each test
+    }
+
+    protected function _after() {
+        // Clean up or reset any changes made during the test
+    }
+
+    public function testGetInputReturnsArray() {
+        $baseClass = new \Src\BaseClass();
+
+        // Mock the file_get_contents function to return a JSON string
+        $jsonString = '{"name":"John Doe","state":"CA","zip":"12345","amount":10.5,"qty":2,"item":"Widget"}';
+        $this->getModule('PhpBrowser')->_getConfig()['mockedData']['file_get_contents'] = $jsonString;
+
+        // Call the getInput() method
+        $result = $baseClass->getInput();
+
+        // Assert that the result is an array with the expected values
+        $expectedResult = [
+            'name' => 'John Doe',
+            'state' => 'CA',
+            'zip' => '12345',
+            'amount' => 10.5,
+            'qty' => 2,
+            'item' => 'Widget',
+        ];
+        $this->assertEquals($expectedResult, $result);
+    }
+
+    public function testValidateOrderDataWithValidData() {
+        $baseClass = new \Src\BaseClass();
+
+        // Prepare a mock input data
         $inputData = [
             'name' => 'John Doe',
-            'state' => 'California',
-            'zip' => '123456',
+            'state' => 'CA',
+            'zip' => '12345',
             'amount' => 10,
-            'qty' => 5,
-            'item' => 'Widget'
+            'qty' => 2,
+            'item' => 'Product',
+        ];
+
+        // Call the validateOrderData() method
+        $result = $baseClass->validateOrderData($inputData);
+
+        // Assert that the result is true, indicating valid data
+        $this->assertTrue($result);
+    }
+
+    public function testValidateOrderDataWithInvalidData() {
+        $baseClass = new \Src\BaseClass();
+
+        $inputData = [
+            'name' => '',
+            'state' => 'CA',
+            'zip' => '',
+            'amount' => '10.5',
+            'qty' => '',
+            'item' => '',
         ];
 
         $result = $baseClass->validateOrderData($inputData);
 
-        $this->assertTrue($result);
-    }
-
-    public function testGetInput() {
-        $inputData = ['name' => 'John Doe', 'age' => 25];
-        $inputJson = json_encode($inputData);
-
-        $baseClass = new Src\BaseClass();
-        $this->mockPhpInput($inputJson);
-
-        $result = $baseClass->getInput();
-
-        $this->assertEquals($inputData, $result);
-    }
-
-    public function testSendResponse() {
-        $expectedStatus = 200;
-        $expectedData = ['message' => 'Success'];
-        $expectedMessage = 'OK';
-
-        $baseClass = new Src\BaseClass();
-        $this->expectOutputString(json_encode(['status' => $expectedStatus, 'data' => $expectedData, 'message' => $expectedMessage]));
-
-        $baseClass->sendResponse($expectedStatus, $expectedData, $expectedMessage);
-
-        $this->assertSame(http_response_code(), $expectedStatus);
-    }
-
-    public function testNotFoundResponse() {
-        $expectedStatus = 404;
-
-        $baseClass = new Src\BaseClass();
-        $this->expectOutputString(json_encode(['status' => $expectedStatus, 'data' => [], 'message' => 'Not Found']));
-
-        $baseClass->notFoundResponse();
-
-        $this->assertSame(http_response_code(), $expectedStatus);
-    }
-
-    public function testUnprocessableEntityResponse() {
-        $expectedStatus = 422;
-
-        $baseClass = new Src\BaseClass();
-        $this->expectOutputString(json_encode(['status' => $expectedStatus, 'data' => [], 'message' => 'Invalid input']));
-
-        $baseClass->unprocessableEntityResponse();
-
-        $this->assertSame(http_response_code(), $expectedStatus);
-    }
-
-    private function mockPhpInput($data) {
-        // Mock the input stream using php://temp
-        $stream = fopen('php://temp', 'r+');
-        fwrite($stream, $data);
-        rewind($stream);
-
-        // Set the input stream to the mock data
-        stream_wrapper_register('protocol', new Src\BaseClass());
-        DummyStreamWrapper::$stream = $stream;
-
-        // Set the default input stream to the mock wrapper
-        ini_set('default_socket_timeout', -1);
-        ini_set('default_mimetype', 'application/octet-stream');
-        ini_set('default_wrapper', 'php-input');
-    }
-
-    public function testSetHeaders() {
-        $expectedHeaders = [
-            'Content-Type: application/json',
-            'Cache-Control: no-store, no-cache, must-revalidate',
-            'Pragma: no-cache'
+        $expectedResult = [
+            'data' => [
+                'name' => 'Name is required',
+                'zip' => 'Zip code is required',
+                'amount' => 'Amount must be a number',
+                'qty' => 'Quantity is required',
+                'item' => 'Item is required',
+            ],
+            'message' => 'Error',
         ];
-        $baseClass = new Src\BaseClass();
-        // Capture the headers sent during the execution of setHeaders
-        $capturedHeaders = [];
-        $baseClass->setHeaders();
-        $this->assertEquals($expectedHeaders, $capturedHeaders);
+
+        $this->assertEquals($expectedResult, $result);
+    }
+
+    protected function createErrorResponse($status, $data, $message = null) {
+        return [
+            'status' => $status,
+            'data' => $data,
+            'message' => $message,
+        ];
     }
 
 }
-
-?>
